@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Combobox</title>
+    <link href="css/jquery.combobox.css" rel="stylesheet" />
+    <script src="js/missed.js"></script>
+    <script src="js/jquery-1.10.1.min.js"></script>
+    <script src="js/jquery.combobox.js"></script>
+    <script src="js/jquery.easing.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style>
+        * {
+            padding: 0; margin: 0;
+        }
+        body {
+            font-family: 'Arial';
+            font-size: 90%;
+            color: #222;
+            line-height: 20px;
+        }
+        .main {
+            padding: 10px 20px;
+        }
+        .main > table {
+            width: 100%;
+        }
+        p {
+            padding: 5px 0 8px 0;
+            text-indent: 35px;
+            line-height: 20px;
+        }
+        pre {
+            padding: 5px 0 8px 35px;
+            line-height: 18px;
+        }
+        pre.nopadding {
+            padding: 0;
+        }
+        td.result {
+            width: 50%;
+            vertical-align: top;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        .docs { margin-top: 10px }
+        .docs td {
+            vertical-align: top;
+        }
+        .docs th, .docs td {
+            padding: 5px;
+            border: 1px solid #CCC;
+        }
+        .docs th {
+            text-align: center;
+            background: #F8F8F8;
+            font-weight: normal;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="main">
+    <p>See examples <a href="http://jsfiddle.net/user/ivkremer/fiddles/" targer="_blank">here</a>.</p>
+
+    <table class="docs">
+        <thead>
+        <tr>
+            <th colspan="4" style="background: #FCFCFC; letter-spacing: 5px">Options</th>
+        </tr>
+        <tr>
+            <th style="width: 8%">Property</th>
+            <th style="width: 15%">Type</th>
+            <th>Description</th>
+            <th style="width: 13%">Default</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>data</td>
+            <td>Array, Object, String</td>
+            <td>
+                The data for filling combobox items. The original select is used for retrieving data if no data param was given.
+                The data my be an array or an object with enumerated properties that is <code>{0: {...}, 1: {...}}</code>. Also data can be
+                supplied as JSON string. Each item in data expect headers and separators must contain value property, which is an equivalent of
+                <code>option</code> tag value in select. The text of an item should be stored in <code>text</code> property. If the item has a
+                <code>separator</code> property then it appears as a separator in the list. If it also has a <code>header</code> (a string supposed) property then it
+                appears as a header in the list. Be sure a header item has a text anyway if you use data sorting to control its position because sorting depends on text.
+                To use data option in a more flexible way see <code>pMarkup</code> and <code>pFillFunc</code> options.
+            </td>
+            <td><code>null</code></td>
+        </tr>
+        <tr>
+            <td>disabled</td>
+            <td>Boolean</td>
+            <td>Whether to set a visible text input disabled or not.</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>sort</td>
+            <td>Boolean</td>
+            <td>Whether to sort data. Sorting depends on text.</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>sortAsc</td>
+            <td>Boolean</td>
+            <td>Whether to sort ascending (true) or descending (false).</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>removeDuplicates</td>
+            <td>Boolean</td>
+            <td>Whether to remove duplicates from given date. Duplicates are considered as elements with the same <code>value</code> properties.</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>fullMatch</td>
+            <td>Boolean</td>
+            <td>Whether to filter the items not only from the beginning of the line. Anyhow, the filtering is applied only in text stored inside of
+                <code>&lt;span class="dproCombobox-mainspan">&lt;/span></code> element. See also <code>pMarkup</code> and <code>pFillFunc</code></td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>highlight</td>
+            <td>Boolean, null</td>
+            <td>Whether to highlight matches in items while filtering. By default highlighting is enabled if <code>fullMatch</code> is enabled
+                (<code>highlight</code> is set to null by default). To use <code>fullMatch</code> without highlighting set <code>highlight</code> option
+                strictly to <code>false</code>. To turn on highlighting anyway set it to <code>true</code>.</td>
+            <td><code>null</code></td>
+        </tr>
+        <tr>
+            <td>expandOnFocus</td>
+            <td>Boolean</td>
+            <td>Whether to expand combobox on focus in filter input.td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>wrap</td>
+            <td>Boolean</td>
+            <td>Whether to use word wrap in items.</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>fillOnArrowPress</td>
+            <td>Boolean</td>
+            <td>Whether to change the text in filter input while walking up and down by arrows. If this option is turned off than text changes only
+                on blur (if <code>fillOnBlur</code> is on).</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>fillOnBlur</td>
+            <td>Boolean</td>
+            <td>Whether to change combobox value on blur. In this case the current selected item will be used. This feature works when using arrow keys.</td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>showDropDown</td>
+            <td>Boolean</td>
+            <td>Whether to display an arrow button in the right corner of a combobox.</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>forbidInvalid</td>
+            <td>Boolean</td>
+            <td>Whether to forbid leaving invalid value in combobox on blur. In case this feature is disabled combobox is highlighted on blur
+                (<code>dproCombobox-invalid</code> css-class). Other way, the filter text field becomes empty and the combobox value is unset.
+            </td>
+            <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>maxHeight</td>
+            <td>String</td>
+            <td>Sets the items list div max height (css property).</td>
+            <td><code>''</code></td>
+        </tr>
+        <tr>
+            <td>tabindex</td>
+            <td>Number, null</td>
+            <td>This field sets tabindex for current combobox or set of comboboxes. If set to null, tabindex is removed.</td>
+            <td><code>null</code></td>
+        </tr>
+        <tr>
+            <td>reassignId</td>
+            <td>Boolean</td>
+            <td>Whether to reattach the <code>id</code> from original select to created combobox.</td>
+            <td><code>true</code></td>
+        </tr>
+        <tr>
+            <td>mode</td>
+            <td>String</td>
+            <td>Whether to use <code>'default'</code> or <code>'checkboxes'</code> mode of combobox. <code>'default'</code> mode is a regular select with a search
+                field. <code>'checkboxes'</code> is a mode when you can select multiple items by clicking checkboxes in it. In this mode you don't have a text field
+                for search and the value of combobox is an array of strings – selected values, not the single string.</td>
+            <td><code>'default'</code></td>
+        </tr>
+        <tr>
+            <td>pMarkup</td>
+            <td>String</td>
+            <td>The paragraph markup. Each item in a list is a paragraph tag.</td>
+            <td><code>'&lt;img src="${imgsrc}" />&lt;span class="dproCombobox-mainspan">${text}&lt;/span> &lt;span>${additional}&lt;/span>'</code></td>
+        </tr>
+        <tr>
+            <td>pFillFunc</td>
+            <td>Function</td>
+            <td>Function which fills the items using provided data and <code>pMarkup</code> option.</td>
+            <td><pre class="nopadding">function(item, options) {
+    var $p = $('&lt;p />').html(options.pMarkup
+        .replace('${text}', item.text)
+        .replace('${additional}', item.additional ? item.additional : '')
+        .replace('${imgsrc}', item.imgsrc || '')
+    );
+    if (typeof item.imgsrc != 'string') {
+        $p.find('img').hide();
+    }
+    return $p;
+}</pre></td>
+        </tr>
+        <tr>
+            <td>animation</td>
+            <td>Object</td>
+            <td>Animation options (combobox opening/closing).</td>
+            <td><code>{ duration: 'fast', easing: 'swing' }</code></td>
+        </tr>
+        <tr>
+            <td>listMaxWidth</td>
+            <td>Number</td>
+            <td>Limits the list with paragraphs width.</td>
+            <td><code>window.screen.width / 2</code></td>
+        </tr>
+        <tr>
+            <td>callback</td>
+            <td>Object</td>
+            <td><code>callback.func</code> executes with arguments <code>callback.args</code>
+                after every combobox initialization finished. If the target set
+                contains multiple comboboxes, than callback executes each time. <code>this</code> refers
+                to the main combobox div (class <code>dproCombobox</code>).</td>
+        </tr>
+        </tbody>
+        <thead>
+        <tr>
+            <th colspan="4" style="background: #FCFCFC; letter-spacing: 5px">Methods</th>
+        </tr>
+        <tr>
+            <th>Title</th>
+            <th>Arguments</th>
+            <th>Description</th>
+            <th>Returns</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>fill</td>
+            <td>data {Array|Object|String} data</td>
+            <td>Fills the combobox with specified data. The data may be represented in the same way as <code>data</code> option.</td>
+            <td><code>jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>clear</td>
+            <td></td>
+            <td>Deletes all the data and clears the combobox.</td>
+            <td><code>jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>disabled</td>
+            <td>b {Boolean|undefined} flag</td>
+            <td><code>disabled</code> property getter and setter.</td>
+            <td><code>disabled</code> status<code> | jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>options</td>
+            <td>options {Object|undefined}</td>
+            <td>Instance options getter and setter.</td>
+            <td>instance options<code> | jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>val</td>
+            <td>value {String|Array}</td>
+            <td>Combobox value getter and setter. For <code>'default'</code> mode use string, for <code>'checkboxes'</code> use array of strings.</td>
+            <td>Combobox value<code> | jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>open</td>
+            <td></td>
+            <td>Drops the list down.</td>
+            <td><code>jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>close</td>
+            <td></td>
+            <td>Closes the list up.</td>
+            <td><code>jQuery instance</code></td>
+        </tr>
+        <tr>
+            <td>toSelect</td>
+            <td></td>
+            <td>Destroys the combobox, keeping only an original select. Returns a jQuery object with a select.</td>
+            <td>jQuery instance</td>
+        </tr>
+        <tr>
+            <td colspan="4">Here are methods which help with working with listeners. To add a listener, use
+                <code>$(combobox).dproCombobox('lisneter', function(){})</code> syntax. <code>this</code> will refer to different elements depending on event type.
+                To trigger an event use <code>$(combobox).dproCombobox('lisneter')</code> syntax; to trigger event with a certain namespace, use
+                <code>$(combobox).dproCombobox('lisneter', 'namespace')</code> syntax.</td>
+        </tr>
+        <tr>
+            <th>Event type</th>
+            <th>this</th>
+            <th colspan="2">Description</th>
+        </tr>
+        <tr>
+            <td>change</td>
+            <td>select</td>
+            <td colspan="2">On select change (hidden element).</td>
+        </tr>
+        <tr>
+            <td>focus</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input focus. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.td>
+        </tr>
+        <tr>
+            <td>blur</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input blur. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>keyup</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input keyup. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>keydown</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input keydown. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>keypress</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input keypress. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>click</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input click. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>mousedown</td>
+            <td>&lt;input class="dproCombobox-display" /></td>
+            <td colspan="2">On filter input mousedown. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
+        </tr>
+        <tr>
+            <td>clickDropdown</td>
+            <td>&lt;div class="dproCombobox-list" /></td>
+            <td colspan="2">This event is a click on the dropdown button located in the right corner of a combobox.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

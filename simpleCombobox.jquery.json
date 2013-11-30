@@ -1,0 +1,38 @@
+{
+    "name": "simpleCombobox",
+    "description": "A combobox plugin",
+    "version": "1.0.0",
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/ivkremer/jquery-simple-combobox/blob/master/LICENSE"
+        }
+    ],
+    "title": "Simple Combobox",
+    "keywords": [
+        "select",
+        "multiselect",
+        "dropdown",
+        "form",
+        "input",
+        "ui",
+        "combobox"
+    ],
+    "author": {
+        "url": "http://kremer.pro",
+        "name": "Ilya Kremer"
+    },
+    "maintainers": [
+        {
+            "name": "Ilya Kremer",
+            "url": "https://github.com/ivkremer"
+        }
+    ],
+    "download": "https://github.com/ivkremer/jquery-simple-combobox",
+    "homepage": "https://github.com/ivkremer/jquery-simple-combobox",
+    "docs": "https://github.com/ivkremer/jquery-simple-combobox",
+    "bugs": "https://github.com/ivkremer/jquery-simple-combobox/issues",
+    "dependencies": {
+        "jquery": ">=1.7"
+    }
+}
