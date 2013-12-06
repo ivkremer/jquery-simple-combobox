@@ -754,12 +754,15 @@
             console.warn('no such easing: ' + options.easing);
             options.easing = 'swing';
         }
+        var $comboDiv = this.parent();
         if (dir == 'up') {
             this.slideUp(options).data('p-clicked-index', -1);
+            $comboDiv.children(cp + cddarr).removeClass(pname + cddarr + '-up');
         } else {
             this.slideDown(options);
+            $comboDiv.children(cp + cddarr).addClass(pname + cddarr + '-up');
         }
-        var $display = this.parent().children(cp + cdisplay); // code for fillOnArrowPress feature
+        var $display = $comboDiv.children(cp + cdisplay); // code for fillOnArrowPress feature
         $display.each(function() {
             var $t = $(this);
             if ($t.data('fillonarrow') && !backspace) { // fix backspace bug

@@ -64,6 +64,18 @@
 <div class="main">
     <p>See examples <a href="http://jsfiddle.net/user/ivkremer/fiddles/" targer="_blank">here</a>.</p>
 
+    <div>
+        <select id="combo-01">
+            <option value="01">val 1</option>
+            <option value="02">val 2</option>
+            <option value="03">val 3</option>
+        </select>
+        <script>
+            $(function() {
+                $('#combo-01').scombobox();
+            })
+        </script>
+    </div>
     <table class="docs">
         <thead>
         <tr>
@@ -133,7 +145,7 @@
         <tr>
             <td>expandOnFocus</td>
             <td>Boolean</td>
-            <td>Whether to expand combobox on focus in filter input.td>
+            <td>Whether to expand combobox on focus in filter input.td
             <td><code>true</code></td>
         </tr>
         <tr>
