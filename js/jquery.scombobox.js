@@ -74,6 +74,7 @@
             if (opts.mode != 'checkboxes') {
                 if (this.find(cp + cdisplay).length == 0) {
                     this.append('<input class="' + pname + cdisplay + '" type="text" />');
+					this.height(this.find(cp + cdisplay).css('font-size'));
                 }
             }
             if (opts.tabindex != null) {
