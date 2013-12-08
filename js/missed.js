@@ -46,42 +46,6 @@ if (!Array.prototype.indexOf) {
         return -1;
     }
 }
-if (!Array.prototype.forEach) {
-    Array.prototype.forEach = function(fn, scope) {
-        for (var i = 0, len = this.length; i < len; ++i) {
-            fn.call(scope, this[i], i, this);
-        }
-    };
-}
-if (!Array.prototype.filter) {
-    Array.prototype.filter = function(fun /*, thisp*/) {
-        'use strict';
-
-        if (this == null) {
-            throw new TypeError();
-        }
-
-        var t = Object(this),
-            len = t.length >>> 0,
-            res, thisp, i, val;
-        if (typeof fun !== 'function') {
-            throw new TypeError();
-        }
-
-        res = [];
-        thisp = arguments[1];
-        for (i = 0; i < len; i++) {
-            if (i in t) {
-                val = t[i]; // in case fun mutates this
-                if (fun.call(thisp, val, i, t)) {
-                    res.push(val);
-                }
-            }
-        }
-
-        return res;
-    };
-}
 if (!Object.keys) {
     Object.keys = (function () {
         'use strict';
@@ -121,55 +85,4 @@ if (!Object.keys) {
             return result;
         };
     }());
-}
-if (!Object.is) {
-    Object.is = function(v1, v2) {
-        if (v1 === 0 && v2 === 0)
-            return 1 / v1 === 1 / v2;
-        if (v1 !== v1)
-            return v2 !== v2;
-        return v1 === v2;
-    };
-}
-if (!Object.create) {
-    Object.create = (function(){
-        function F(){}
-
-        return function(o) {
-            if (arguments.length != 1) {
-                throw new Error('Object.create implementation only accepts one parameter.');
-            }
-            F.prototype = o;
-            return new F()
-        }
-    })()
-}
-if (!Math.imul) {
-    function imul(a, b) {
-        var ah  = (a >>> 16) & 0xffff;
-        var al = a & 0xffff;
-        var bh  = (b >>> 16) & 0xffff;
-        var bl = b & 0xffff;
-        // the shift by 0 fixes the sign on the high part
-        // the final |0 converts the unsigned value into a signed value
-        return ((al * bl) + (((ah * bl + al * bh) << 16) >>> 0)|0);
-    }
-}
-if (!window.JSON) {
-    window.JSON = {
-        parse: function (sJSON) { return eval("(" + sJSON + ")"); },
-        stringify: function (vContent) {
-            if (vContent instanceof Object) {
-                var sOutput = "";
-                if (vContent.constructor === Array) {
-                    for (var nId = 0; nId < vContent.length; sOutput += this.stringify(vContent[nId]) + ",", nId++);
-                    return "[" + sOutput.substr(0, sOutput.length - 1) + "]";
-                }
-                if (vContent.toString !== Object.prototype.toString) { return "\"" + vContent.toString().replace(/"/g, "\\$&") + "\""; }
-                for (var sProp in vContent) { sOutput += "\"" + sProp.replace(/"/g, "\\$&") + "\":" + this.stringify(vContent[sProp]) + ","; }
-                return "{" + sOutput.substr(0, sOutput.length - 1) + "}";
-            }
-            return typeof vContent === "string" ? "\"" + vContent.replace(/"/g, "\\$&") + "\"" : String(vContent);
-        }
-    };
 }
