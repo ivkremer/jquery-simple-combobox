@@ -1,7 +1,7 @@
 jQuery Simple Combobox plugin
 =============================
 
-A jQuery combobox plugin.
+A jQuery combobox plugin. You can use it for autocomplete (search, etc).
 
 Usage
 -----
