@@ -13,7 +13,6 @@
 // TODO consider to add fadeout background for items (checkboxes mode)
 // TODO consider to add height auto correction function and property (to be devisible by $p.height)
 // TODO add beforeClose, beforeOpen, afterClose and afterOpen listeners
-// TODO add TAB key functionality
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code.
