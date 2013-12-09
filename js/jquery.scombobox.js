@@ -3,7 +3,7 @@
 // Don't forget not to remove it from a minimised version also.
 
 /**
- * jquery.simple-combobox: jquery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.1: jQuery combobox plugin | (c) 2013 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
