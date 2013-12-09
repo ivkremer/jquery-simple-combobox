@@ -12,8 +12,8 @@
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
 // TODO consider to add height auto correction function and property (to be devisible by $p.height)
-// TODO consider to create IE8 compatible version ($.trim instead of ''.trim; remove console; add object.keys; modify comment)
 // TODO add beforeClose, beforeOpen, afterClose and afterOpen listeners
+// TODO add TAB key functionality
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code.
@@ -46,6 +46,7 @@
             slow: 600
         })[d] || d;
     }
+    var pInt = parseInt;
     var methods = {
         /**
          * Initializes the combobox.
@@ -106,8 +107,18 @@
                     this.append('<div class="' + pname + cdiv +'"><div class="' + pname + cdholder + '" /></div>');
                 }
                 $div.insertAfter(this.find(cp + cdisplay + '-div'));
+                var $dholder = this.find(cp + cdholder);
+                var $testItem = $('<div class="' + pname + cditem + '" id="' + pname + '-test-item"><div class="' + pname + cditem + '-text">x</div></div>');
+                $dholder.append($testItem.css('margin-left', '-9999px').show());
+                var height = $testItem.height()
+                    + pInt($testItem.css('padding-top')) * 2
+                    + pInt($testItem.css('margin-top')) * 2
+                    + pInt($testItem.css('border-top-width')) * 2
+                    + pInt($dholder.css('padding-top')) * 2;
+                this.find(cp + cdisplay + '-div').height(height);
+                $testItem.remove();
             } else {
-                $(cp + '-display-div', this[0]).remove();
+                this.find(cp + '-display-div').remove();
                 $div.insertAfter(this.find(cp + cdisplay));
             }
             $div.css({'max-width': opts.listMaxWidth, 'max-height': opts.maxHeight});
@@ -122,7 +133,7 @@
          * @see comments in defaults
          * @param {Array} data array of data objects. See comments in defaults
          * @param {Boolean} initialization is to determine whether this method is called right after initialization or lately.
-         * If the method is called right after initialization then it provided callback property executes.
+         * If the method is called right after initialization then callback.func property executes.
          * @returns {Object} jQuery object
          */
         fill: function(data, initialization) {
@@ -456,8 +467,10 @@
             });
         });
         this.on('keydown', cp + cdisplay, function(e) {
-            if ([38, 40, 13, 27].indexOf(e.which) >= 0) {
-                e.preventDefault();
+            if ([38, 40, 13, 27, 9].indexOf(e.which) >= 0) {
+                if (e.which != 9) {
+                    e.preventDefault();
+                }
                 var $combobox = $(this).closest(cp);
                 var $div = $combobox.children(cp + clist);
                 var $hovered = $(cp + chovered, $div[0]), $curr, offset;
@@ -470,6 +483,7 @@
             if ($div.is(':animated')) {
                 return; // keydown event is only for arrows, enter and escape
             }
+            var v = this.value.trim().toLowerCase()
             var scrollTop = $div.scrollTop();
             if (e.which == 40) { // arrdown
                 if ($div.is(':hidden')) {
@@ -527,7 +541,7 @@
                     getFirstP($div).click();
                     return;
                 }
-                var v = this.value.trim().toLowerCase(), valid = false;
+                var valid = false;
                 $div.children('p').each(function() {
                     if ($(cp + cmainspan, this).text().trim().toLowerCase() == v) {
                         $(this).click();
@@ -535,13 +549,23 @@
                     }
                 });
                 if (valid == false) {
-                    $div.children(cp + chovered).trigger('click', [e.shiftKey]);
+                    $div.children(cp + chovered).click();
                 }
                 if (O.mode == 'default') {
                     slide.call($div, 'up');
                 }
             } else if (e.which == 27) { // escape
                 slide.call($(this).blur().closest(cp).children(cp + clist), 'up');
+            } else if (e.which == 9) { // tab
+                if (O.fillOnTab) {
+                    if (v) {
+                        var $p = $div.children('p:visible:first');
+                        if ($p.length) {
+                            e.preventDefault();
+                            $div.children('p:visible:first').click();
+                        }
+                    }
+                }
             }
         });
         this.on('change', 'select', function(e, checkboxesMode) { // someone triggered combobox select change
@@ -559,14 +583,10 @@
             }
             slide.call($combo.children(cp + clist), 'up');
         });
-        /* enterPress was added for checkboxes mode, TODO check if it is actual now */
-        this.on('click', cp + clist + ' p', function(e, enterPress) { // value selected by clicking
+        this.on('click', cp + clist + ' p', function(e) { // value selected by clicking
             e.stopPropagation();
             if ($(this).is(cp + csep + ', ' + cp + cpheader)) {
                 return;
-            }
-            if (enterPress != undefined) {
-                e.shiftKey = enterPress;
             }
             var $t = $(this), $div = $t.parent(), $ps = $div.children('p:not(' + cp + csep + ', ' + cp + cpheader + ')');
             var index = $ps.index(this);
@@ -1015,6 +1035,11 @@
          * Select hovered or first matching option on blur
          */
         fillOnBlur: false,
+        /**
+         * Whether to set the first visible item as a value on tab key press (works only if search input is not empty).
+         * If set to false then the default action is working (going to the next input on page).
+         */
+        fillOnTab: true,
         /**
          * If set to true dropdown arrow appears in the right corner of combobox
          */

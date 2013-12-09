@@ -15,8 +15,11 @@
         body {
             font-family: 'Arial';
             font-size: 90%;
-            color: #222;
+            color: #333;
             line-height: 20px;
+        }
+        input {
+            font-size: 110%;
         }
         .main {
             padding: 10px 20px;
@@ -73,7 +76,7 @@
         <script>
             $(function() {
                 $('#combo-01').scombobox();
-            })
+            });
         </script>
     </div>
     <table class="docs">
@@ -166,6 +169,13 @@
             <td>Boolean</td>
             <td>Whether to change combobox value on blur. In this case the current selected item will be used. This feature works when using arrow keys.</td>
             <td><code>false</code></td>
+        </tr>
+        <tr>
+            <td>fillOnTab</td>
+            <td>Boolean</td>
+            <td>Whether to set the first visible item as a value on tab key press.
+                If set to false then the default action is working (going to the next input on page).</td>
+            <td><code>true</code></td>
         </tr>
         <tr>
             <td>showDropDown</td>
