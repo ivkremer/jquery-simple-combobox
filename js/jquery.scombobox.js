@@ -603,6 +603,7 @@
             }
             clearTimeout($T.data(pname + '-invalid-timeout')); // undo checking for invalid
             $T.children(cp + cinvalid).removeClass(pname + cinvalid); // 100% it is not invalid now
+            $T.children(cp + cddback).removeClass(pname + cddback + cinvalid);
             var $t = $(this), $div = $t.parent(), $ps = $div.children('p:not(' + cp + csep + ', ' + cp + cpheader + ')');
             var index = $ps.index(this);
             if ($T.data(pname).mode == 'checkboxes') {
@@ -624,8 +625,8 @@
             }
             var v = $t.val().trim().toLowerCase();
             var $select = $t.siblings('select');
-
             var $valueInput = $t.siblings(cp + cvalue);
+
             function checkForInvalid() {
                 var value, v = $t.val().trim().toLowerCase();
                 // check if such value exists in options
@@ -647,11 +648,9 @@
                     $t.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
                 }
             }
-            $T.data(pname + '-invalid-timeout', setTimeout(function() {
-                // checking for invalid happens few moments later
-                // invalid class will be removed when p gets click
-                checkForInvalid();
-            }, 500));
+            // checking for invalid happens few moments later
+            // invalid class will be removed when p gets click
+            $T.data(pname + '-invalid-timeout', setTimeout(checkForInvalid, 500));
             var previousV = $valueInput.val();
             if (v == '') {
                 $valueInput.val('');
