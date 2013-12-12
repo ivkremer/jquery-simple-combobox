@@ -3,7 +3,7 @@
 // Don't forget not to remove it from a minimised version also.
 
 /**
- * jquery.simple-combobox v1.1.1: jQuery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.2: jQuery combobox plugin | (c) 2013 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -11,7 +11,7 @@
 
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
-// TODO consider to add height auto correction function and property (to be devisible by $p.height)
+// TODO consider to add height auto correction function and property (to be divisible by $p.height)
 // TODO add beforeClose, beforeOpen, afterClose and afterOpen listeners
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
@@ -76,7 +76,7 @@
                     var $inputDisplay = $('<input class="' + pname + cdisplay + '" type="text" />');
                     this.append($inputDisplay);
                     this.height(
-                            +$inputDisplay.css('font-size') +
+                        +$inputDisplay.css('font-size') +
                             +$inputDisplay.css('padding-top') +
                             +$inputDisplay.css('padding-bottom')
                     );
@@ -244,11 +244,25 @@
             return this;
         },
         /**
+         * Sets the tabindex attribute for search input.
+         * @param index
+         * @returns {Number|Object}
+         */
+        tabindex: function(index) {
+            var $display = this.find(cp + cdisplay);
+            if (arguments.length == 0) {
+                return $display.attr('tabindex');
+            } else {
+                $display.attr('tabindex', index);
+                return this;
+            }
+        },
+        /**
          * Resets options or see the options. Do not use this for changing data because merging is deep, so
          * data may be merged instead of being replaced.
          * For updating data use data method.
          * @param {Object} options
-         * @returns {Object} jQuery object
+         * @returns {Object} jQuery object or options object
          */
         options: function(options) {
             if (arguments.length == 0) {
@@ -482,7 +496,7 @@
             if ($div.is(':animated')) {
                 return; // keydown event is only for arrows, enter and escape
             }
-            var v = this.value.trim().toLowerCase()
+            var v = this.value.trim().toLowerCase();
             var scrollTop = $div.scrollTop();
             if (e.which == 40) { // arrdown
                 if ($div.is(':hidden')) {
@@ -587,6 +601,8 @@
             if ($(this).is(cp + csep + ', ' + cp + cpheader)) {
                 return;
             }
+            clearTimeout($T.data(pname + '-invalid-timeout')); // undo checking for invalid
+            $T.children(cp + cinvalid).removeClass(pname + cinvalid); // 100% it is not invalid now
             var $t = $(this), $div = $t.parent(), $ps = $div.children('p:not(' + cp + csep + ', ' + cp + cpheader + ')');
             var index = $ps.index(this);
             if ($T.data(pname).mode == 'checkboxes') {
@@ -600,11 +616,6 @@
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
-        this.on('mousedown', cp + clist + ' p', function() {
-            setTimeout(function() {
-                $T.children(cp + cinvalid).removeClass(pname + cinvalid);
-            });
-        });
         this.on('blur', cp + cdisplay, function() {
             var $t = $(this), O = $T.data(pname);
             if (O.fillOnBlur) {
@@ -613,26 +624,34 @@
             }
             var v = $t.val().trim().toLowerCase();
             var $select = $t.siblings('select');
-            var value = '';
-            // check if such value exists in options
-            $select.find('option').each(function () {
-                if (v == $(this).text().trim().toLowerCase()) {
-                    value = this.value;
-                }
-            });
+
             var $valueInput = $t.siblings(cp + cvalue);
-            var invalid = (!value && v); // if not found && .display was not empty
-            if (invalid) {
-                if (O.forbidInvalid) {
-                    $t.closest(cp).find(cp + cdisplay).val('').data('value', '');
+            function checkForInvalid() {
+                var value, v = $t.val().trim().toLowerCase();
+                // check if such value exists in options
+                $select.find('option').each(function () {
+                    if (v == $(this).text().trim().toLowerCase()) {
+                        value = this.value;
+                    }
+                });
+                var invalid = (!value && v);
+                if (invalid) {
+                    if (O.forbidInvalid) {
+                        $t.closest(cp).find(cp + cdisplay).val('').data('value', '');
+                    } else {
+                        $t.addClass(pname + cinvalid).siblings(cp + cddback)
+                            .addClass(pname + cddback + cinvalid);
+                    }
+                    $t.siblings('select, ' + cp + cvalue).val('');
                 } else {
-                    $t.addClass(pname + cinvalid).siblings(cp + cddback)
-                        .addClass(pname + cddback + cinvalid);
+                    $t.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
                 }
-                $t.siblings('select, ' + cp + cvalue).val('');
-            } else {
-                $t.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
             }
+            $T.data(pname + '-invalid-timeout', setTimeout(function() {
+                // checking for invalid happens few moments later
+                // invalid class will be removed when p gets click
+                checkForInvalid();
+            }, 500));
             var previousV = $valueInput.val();
             if (v == '') {
                 $valueInput.val('');
@@ -965,7 +984,7 @@
         /**
          * Set tabindex
          */
-        tabindex: null, // TODO consider to use -1 as default value
+        tabindex: null,
         /**
          * When true, invalid values are forbidden what means combobox search input empties on blur in case the value
          * was not chosen and search field contained wrong text.
