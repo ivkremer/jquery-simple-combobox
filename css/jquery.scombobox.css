@@ -60,9 +60,8 @@
     border-radius: 100px;
     color: white;
     cursor: pointer;
-    font-weight: normal;
     line-height: 90%;
-    padding: 0 3px;
+    padding: 1px 3px 0px;
 }
 .scombobox-display-div-item-remove:hover {
     background: #408CBE;
@@ -157,7 +156,8 @@
     cursor: pointer;
 }
 
-.scombobox-disabled .scombobox-dropdown-background, .scombobox-disabled .scombobox-dropdown-arrow {
+.scombobox-disabled .scombobox-dropdown-background,
+    .scombobox-disabled .scombobox-dropdown-arrow {
     display: none;
 }
 .scombobox-disabled .scombobox-display-div {

@@ -13,7 +13,7 @@
             padding: 0; margin: 0;
         }
         body {
-            font-family: 'Arial';
+            font-family: 'Arial', sans-serif;
             font-size: 90%;
             color: #333;
             line-height: 20px;
@@ -134,7 +134,7 @@
     <td>fullMatch</td>
     <td>Boolean</td>
     <td>Whether to filter the items not only from the beginning of the line. Anyhow, the filtering is applied only in text stored inside of
-        <code>&lt;span class="dproCombobox-mainspan">&lt;/span></code> element. See also <code>pMarkup</code> and <code>pFillFunc</code></td>
+        <code>&lt;span class="scombobox-mainspan">&lt;/span></code> element. See also <code>pMarkup</code> and <code>pFillFunc</code></td>
     <td><code>false</code></td>
 </tr>
 <tr>
@@ -187,7 +187,7 @@
     <td>forbidInvalid</td>
     <td>Boolean</td>
     <td>Whether to forbid leaving invalid value in combobox on blur. In case this feature is disabled combobox is highlighted on blur
-        (<code>dproCombobox-invalid</code> css-class). Other way, the filter text field becomes empty and the combobox value is unset.
+        (<code>scombobox-invalid</code> css-class). Other way, the filter text field becomes empty and the combobox value is unset.
     </td>
     <td><code>false</code></td>
 </tr>
@@ -221,7 +221,7 @@
     <td>pMarkup</td>
     <td>String</td>
     <td>The paragraph markup. Each item in a list is a paragraph tag.</td>
-    <td><code>'&lt;img src="${imgsrc}" />&lt;span class="dproCombobox-mainspan">${text}&lt;/span> &lt;span>${additional}&lt;/span>'</code></td>
+    <td><code>'&lt;img src="${imgsrc}" />&lt;span class="scombobox-mainspan">${text}&lt;/span> &lt;span>${additional}&lt;/span>'</code></td>
 </tr>
 <tr>
     <td>pFillFunc</td>
@@ -257,7 +257,7 @@
     <td><code>callback.func</code> executes with arguments <code>callback.args</code>
         after every combobox initialization finished. If the target set
         contains multiple comboboxes, than callback executes each time. <code>this</code> refers
-        to the main combobox div (class <code>dproCombobox</code>).</td>
+        to the main combobox div (class <code>scombobox</code>).</td>
 </tr>
 </tbody>
 <thead>
@@ -274,14 +274,19 @@
 <tbody>
 <tr>
     <td>fill</td>
-    <td>data {Array|Object|String} data</td>
-    <td>Fills the combobox with specified data. The data may be represented in the same way as <code>data</code> option.</td>
-    <td><code>jQuery instance</code></td>
+    <td>data {Array|Object|String|undefined} data, fill {Boolean} flag</td>
+    <td>Sets the combobox data. The data may be represented in the same way as <code>data</code> option.
+        Use <code>fill</code> option to change combobox contents. Using this method without it does not
+        rebuild the combobox contents.<br />
+        Despite of having <code>options</code> method described below, this method it useful because
+        after using <code>options</code> method the data will be merged what may be undesired.
+    </td>
+    <td><code>jQuery instance</code> | <code>combobox data</code></td>
 </tr>
 <tr>
     <td>clear</td>
     <td></td>
-    <td>Deletes all the data and clears the combobox.</td>
+    <td>Empties the combobox. You can still use <code>fill</code> method to get the combobox items back.</td>
     <td><code>jQuery instance</code></td>
 </tr>
 <tr>
@@ -322,9 +327,9 @@
 </tr>
 <tr>
     <td colspan="4">Here are methods which help with working with listeners. To add a listener, use
-        <code>$(combobox).dproCombobox('lisneter', function(){})</code> syntax. <code>this</code> will refer to different elements depending on event type.
-        To trigger an event use <code>$(combobox).dproCombobox('lisneter')</code> syntax; to trigger event with a certain namespace, use
-        <code>$(combobox).dproCombobox('lisneter', 'namespace')</code> syntax.</td>
+        <code>$(combobox).scombobox('lisneter', function(){})</code> syntax. <code>this</code> will refer to different elements depending on event type.
+        To trigger an event use <code>$(combobox).scombobox('lisneter')</code> syntax; to trigger event with a certain namespace, use
+        <code>$(combobox).scombobox('lisneter', 'namespace')</code> syntax.</td>
 </tr>
 <tr>
     <th>Event type</th>
@@ -338,42 +343,62 @@
 </tr>
 <tr>
     <td>focus</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input focus. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.td>
 </tr>
 <tr>
     <td>blur</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input blur. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
     <td>keyup</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input keyup. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
     <td>keydown</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input keydown. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
     <td>keypress</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input keypress. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
+    <td>beforeOpen</td>
+    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
+    <td colspan="2">This event fires just before div with options slides down.</td>
+</tr>
+<tr>
+    <td>beforeClose</td>
+    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
+    <td colspan="2">This event fires just before div with options slides up.</td>
+</tr>
+<tr>
+    <td>afterOpen</td>
+    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
+    <td colspan="2">This event fires just after div with options slides down.</td>
+</tr>
+<tr>
+    <td>afterClose</td>
+    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
+    <td colspan="2">This event fires just after div with options slides up.</td>
+</tr>
+<tr>
     <td>click</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input click. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
     <td>mousedown</td>
-    <td>&lt;input class="dproCombobox-display" /></td>
+    <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input mousedown. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
 </tr>
 <tr>
     <td>clickDropdown</td>
-    <td>&lt;div class="dproCombobox-list" /></td>
+    <td>&lt;div class="scombobox-list" /></td>
     <td colspan="2">This event is a click on the dropdown button located in the right corner of a combobox.</td>
 </tr>
 </tbody>

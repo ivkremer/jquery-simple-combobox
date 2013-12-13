@@ -1,18 +1,15 @@
-// Fill free to use this jQuery plugin in any projects you want
-// while keeping the comment below on top of the script.
-// Don't forget not to remove it from a minimised version also.
-
 /**
- * jquery.simple-combobox v1.1.2: jQuery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.3 (2013-13-12): jQuery combobox plugin | (c) 2013 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
-
+ 
+// Fill free to use this jQuery plugin in any projects you want
+// while keeping the comment above on top of the script.
+// Don't forget not to remove it from a minimised version also.
 // Thank you!
 
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
-// TODO consider to add height auto correction function and property (to be divisible by $p.height)
-// TODO add beforeClose, beforeOpen, afterClose and afterOpen listeners
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code.
@@ -210,7 +207,8 @@
          * @param {string} data
          * @returns {Object} jQuery object
          */
-        data: function(data) { // TODO check why this is here
+        data: function(data) { // this method is required because after setting new options
+            // via options method the data will be merged which probably will be wrong
             if (arguments.length == 0) {
                 return this.data(pname).data;
             } else {
@@ -435,12 +433,11 @@
         if (this.data('listenersAdded')) { // prevent duplicating listeners
             return;
         }
-        var $T = this;
+        var $T = this, O = $T.data(pname);
         this.on('keyup', cp + cdisplay + ', ' + cp + cdiv, function(e) { // filter
             if ([13, 38, 40, 9].indexOf(e.which) >= 0) {
                 return;
             }
-            var O = $T.data(pname);
             var fullMatch = O.fullMatch, highlight = O.highlight;
             if (fullMatch) {
                 highlight = highlight !== false;
@@ -491,7 +488,6 @@
             } else {
                 return;
             }
-            var O = $T.data(pname);
             var fillOnArrow = O.mode == 'default' ? O.fillOnArrowPress : false; // always false for checkboxes mode
             if ($div.is(':animated')) {
                 return; // keydown event is only for arrows, enter and escape
@@ -696,7 +692,6 @@
         this.on('click', cp + cdiremove, function(e) {
             e.stopPropagation();
             var $t = $(this);
-            var O = $T.data(pname);
             var $item = $t.parent(), $div = $T.children(cp + clist);
             $div.children('p').eq($t.data('index')).find(':checkbox').prop('checked', false);
             $item.fadeOut(O.animation.duration);
@@ -797,11 +792,15 @@
             console.warn('no such easing: ' + options.easing);
             options.easing = 'swing';
         }
-        var $comboDiv = this.parent();
+        var $comboDiv = this.parent(), O = $comboDiv.data(pname);
         if (dir == 'up') {
+            O.beforeClose.call($comboDiv);
+            options.complete = function() {O.afterClose.call($comboDiv)};
             this.slideUp(options).data('p-clicked-index', -1);
             $comboDiv.children(cp + cddarr).removeClass(pname + cddarr + '-up');
         } else {
+            O.beforeOpen.call($comboDiv);
+            options.complete = function() {O.afterOpen.call($comboDiv)};
             this.slideDown(options);
             $comboDiv.children(cp + cddarr).addClass(pname + cddarr + '-up');
         }
@@ -1067,7 +1066,11 @@
         callback: {
             func: function(){}, // this refers to combobox's div holder
             args: [] // arguments
-        }
+        },
+        beforeOpen: function(){},
+        beforeClose: function(){},
+        afterOpen: function(){},
+        afterClose: function(){}
     };
 
     $.fn[pname].extendDefaults = function(options) {
