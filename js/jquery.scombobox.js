@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.3 (2013-13-12): jQuery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.4 (2014-01-16): jQuery combobox plugin | (c) 2013 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
  
@@ -122,20 +122,20 @@
                 $div.css('white-space', 'normal');
             }
             addListeners.call(this);
-            return methods.fill.call(this, opts.data, true); // true says that it is right after initialization
+            this.data(pname + '-init', true); // true says that it is right after initialization, it is necessary for callback
+            return methods.fill.call(this, opts.data); // (will be set to false after filling)
         },
         /**
          * Fills the combobox with specified data or using options list in select if no data given.
          * @see comments in defaults
          * @param {Array} data array of data objects. See comments in defaults
-         * @param {Boolean} initialization is to determine whether this method is called right after initialization or lately.
-         * If the method is called right after initialization then callback.func property executes.
+         * @param {Boolean} append flag defining if to append data to existing items
          * @returns {Object} jQuery object
          */
-        fill: function(data, initialization) {
+        fill: function(data, append) {
             var $options = this.find('select option');
             // don't ever rely on div content, always use select options instead
-            var $div = this.find('.' + pname + clist).empty(), $select = this.find('select');
+            var $div = this.find('.' + pname + clist), $select = this.find('select');
             data = normalizeData(data);
             var opts = this.data(pname);
             var mode = opts.mode;
@@ -176,17 +176,16 @@
                         data.reverse();
                     }
                 }
-                $select.empty();
+                if (!append) {
+                    $select.empty();
+                    $div.empty();
+                    this.children(cp + cvalue + ', ' + cp + cdisplay).val('');
+                }
                 pFillFunc.call(this, data, opts);
-                // check if current value is ok:
-                var $valueInput = this.children(cp + cvalue), val = $valueInput.val();
-                if (val) {
-                    $valueInput.val('');
-                    this.children(cp + cdisplay).val('');
-                } // if no value then nothing to do
             }
-            if (initialization) {
+            if (this.data(pname + '-init')) {
                 opts.callback.func.apply(this, opts.callback.args);
+                this.data(pname + '-init', false);
             }
             return this;
         },
@@ -600,7 +599,7 @@
             clearTimeout($T.data(pname + '-invalid-timeout')); // undo checking for invalid
             $T.children(cp + cinvalid).removeClass(pname + cinvalid); // 100% it is not invalid now
             $T.children(cp + cddback).removeClass(pname + cddback + cinvalid);
-            var $t = $(this), $div = $t.parent(), $ps = $div.children('p:not(' + cp + csep + ', ' + cp + cpheader + ')');
+            var $t = $(this), $div = $t.parent(), $ps = $div.children();
             var index = $ps.index(this);
             if ($T.data(pname).mode == 'checkboxes') {
                 checkboxesModePClick.call(this, e); // process checking
@@ -734,9 +733,10 @@
     }
 
     function purifyData(data, debug) {
-        for (var i = 0; i < data.length; data++) {
-            if ((!data[i].value || !data[i].text) && !(data[i].hasOwnProperty('separator')))
-                delete data[i]
+        for (var i = 0; i < data.length; i++) {
+            if ((!data[i].value || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
+                data.splice(i, 1);
+            }
         }
     }
 
@@ -759,7 +759,7 @@
                 if (!a[i] || !a[j])
                     continue;
                 if (a[i].value == a[j].value)
-                    delete a[i];
+                    a.splice(i, 1);
             }
         }
     }
@@ -859,11 +859,12 @@
                 } else { // else add separator itself
                     var $p = $('<p class="' + pname + csep + '" />');
                 }
+                var $option = $('<option />');
             } else { // regular item
-                var $option = $('<option />').val(data[i].value).text(data[i].text);
-                $select.append($option);
+                $option = $('<option />').val(data[i].value).text(data[i].text);
                 $p = opts.pFillFunc.call(this, data[i], settings);
             }
+            $select.append($option);
             $div.append($p);
         }
     }

@@ -73,9 +73,17 @@
         <option value="02">val 2</option>
         <option value="03">val 3</option>
     </select>
+    <select id="combo-02"></select>
     <script>
         $(function() {
             $('#combo-01').scombobox();
+            $('#combo-02').scombobox({
+                data: [{
+                    value: '001', text: 'val 001'
+                }, {
+                    value: '002', text: 'val 002'
+                }]
+            });
         });
     </script>
 </div>
@@ -98,10 +106,11 @@
     <td>
         The data for filling combobox items. The original select is used for retrieving data if no data param was given.
         The data my be an array or an object with enumerated properties that is <code>{0: {...}, 1: {...}}</code>. Also data can be
-        supplied as JSON string. Each item in data expect headers and separators must contain value property, which is an equivalent of
-        <code>option</code> tag value in select. The text of an item should be stored in <code>text</code> property. If the item has a
-        <code>separator</code> property then it appears as a separator in the list. If it also has a <code>header</code> (a string supposed) property then it
-        appears as a header in the list. Be sure a header item has a text anyway if you use data sorting to control its position because sorting depends on text.
+        supplied as JSON string. Each item in data except headers and separators (elements having <code>separator</code> property)
+        must contain value property, which is an equivalent of <code>option</code> tag value in select. The text of an item should
+        be stored in <code>text</code> property. If the item has a <code>separator</code> property then it appears as a separator
+        in the list. If it also has a <code>header</code> (a string supposed) property then it appears as a header in the list.
+        Be sure a header item has a text anyway if you use data sorting to control its position because sorting depends on text.
         To use data option in a more flexible way see <code>pMarkup</code> and <code>pFillFunc</code> options.
     </td>
     <td><code>null</code></td>
@@ -274,11 +283,10 @@
 <tbody>
 <tr>
     <td>fill</td>
-    <td>data {Array|Object|String|undefined} data, fill {Boolean} flag</td>
+    <td>data {Array|Object|String|undefined} data, append {Boolean} flag</td>
     <td>Sets the combobox data. The data may be represented in the same way as <code>data</code> option.
-        Use <code>fill</code> option to change combobox contents. Using this method without it does not
-        rebuild the combobox contents.<br />
-        Despite of having <code>options</code> method described below, this method it useful because
+        Use <code>append</code> option to append items instead of overwriting all existing ones.
+        Despite of having <code>options</code> method described below, this method is useful because
         after using <code>options</code> method the data will be merged what may be undesired.
     </td>
     <td><code>jQuery instance</code> | <code>combobox data</code></td>
