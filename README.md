@@ -8,7 +8,7 @@ Usage
 
 You can find reference in index.html and see [fiddles here](http://jsfiddle.net/user/ivkremer/fiddles/ "JSFiddle") to understand its features.
 
-You can change the name of a plugin in your code by changing ```var pname = 'scombobox';``` line (starting the script). Make sure your CSS class prefixes correcpond this name.
+To change the name of a plugin in your code you need to modify ```var pname = 'scombobox';``` line (starting the script). Make sure your CSS class prefixes correspond this name.
 
 ### IE8 compatibility ###
 
