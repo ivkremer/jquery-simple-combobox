@@ -69,14 +69,14 @@
 
 <div>
     <select id="combo-01">
-        <option value="01">val 1</option>
-        <option value="02">val 2</option>
-        <option value="03">val 3</option>
+        <option value="01">val 01</option>
+        <option value="02">val 02</option>
+        <option value="03">val 03</option>
     </select>
     <select id="combo-02"></select>
     <script>
         $(function() {
-            $('#combo-01').scombobox();
+            $('#combo-01').scombobox({loopScrolling: false});
             $('#combo-02').scombobox({
                 data: [{
                     value: '001', text: 'val 001'

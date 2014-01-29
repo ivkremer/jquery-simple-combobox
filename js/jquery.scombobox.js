@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.4 (2014-01-16): jQuery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.5 (2014-01-30): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
  
@@ -10,6 +10,7 @@
 
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
+// TODO scroll the div so the current element is visible when arrow up/down key is pressed
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code.
@@ -129,10 +130,10 @@
          * Fills the combobox with specified data or using options list in select if no data given.
          * @see comments in defaults
          * @param {Array} data array of data objects. See comments in defaults
-         * @param {Boolean} append flag defining if to append data to existing items
+         * @param {Integer} appendMode flag defining if to append (1) or prepend (2) data to existing items
          * @returns {Object} jQuery object
          */
-        fill: function(data, append) {
+        fill: function(data, appendMode) {
             var $options = this.find('select option');
             // don't ever rely on div content, always use select options instead
             var $div = this.find('.' + pname + clist), $select = this.find('select');
@@ -176,12 +177,12 @@
                         data.reverse();
                     }
                 }
-                if (!append) {
+                if (!appendMode) {
                     $select.empty();
                     $div.empty();
                     this.children(cp + cvalue + ', ' + cp + cdisplay).val('');
                 }
-                pFillFunc.call(this, data, opts);
+                pFillFunc.call(this, data, appendMode == 2); // if appendMode == 2, then it is prepend
             }
             if (this.data(pname + '-init')) {
                 opts.callback.func.apply(this, opts.callback.args);
@@ -484,6 +485,7 @@
                 var $div = $combobox.children(cp + clist);
                 var $hovered = $(cp + chovered, $div[0]), $curr, offset;
                 var $first = $('p:first', $div[0]);
+                var notHeaderSelector = ':not(' + cp + csep + ', ' + cp + cpheader + ')';
             } else {
                 return;
             }
@@ -499,18 +501,18 @@
                     return;
                 }
                 if ($hovered.length == 0) {
-                    if ($first.is(':visible:not(' + cp + csep + ')')) {
+                    if ($first.is(':visible' + notHeaderSelector)) {
                         $curr = $first.addClass(pname + chovered);
                     } else {
-                        $curr = $first.nextAll(':visible:not(' + cp + csep + ')').first().addClass(pname + chovered);
+                        $curr = $first.nextAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     }
                 } else {
-                    $curr = $hovered.removeClass(pname + chovered).nextAll(':visible:not(' + cp + csep + ', ' + cp + cpheader + ')').first().addClass(pname + chovered);
+                    $curr = $hovered.removeClass(pname + chovered).nextAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     if ($curr.length == 0) {
                         if ($first.is(':visible')) {
                             $curr = $first.addClass(pname + chovered);
                         } else {
-                            $curr = $first.nextAll(':visible:not(' + cp + csep + ')').first().addClass(pname + chovered);
+                            $curr = $first.nextAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                         }
                     }
                     if ($curr.length == 0) {
@@ -518,9 +520,13 @@
                     }
                     offset = $curr.position().top - $div.position().top;
                     if (offset + $curr.outerHeight() * 6 > $div.height()) { // keep 4 elements ahead
-                        $div.scrollTop(scrollTop + $curr.outerHeight());
+                        if ((offset + $curr.outerHeight() * 6) - $div.height() > $curr.outerHeight() * 1.5) { // $curr is under the visible bottom border
+                            $div.scrollTop(scrollTop + offset);
+                        } else { // no fix required
+                            $div.scrollTop(scrollTop + $curr.outerHeight()); // increment scrolltop
+                        }
                     } else if (offset < 0) {
-                        $div.scrollTop(0); // to the first element
+                        $div.scrollTop(scrollTop - -offset);
                     }
                 }
                 if (fillOnArrow) {
@@ -529,15 +535,16 @@
                 }
             } else if (e.which == 38) { // arrup
                 if ($div.is(':visible')) {
-                    $curr = $hovered.removeClass(pname + chovered).prevAll(':visible:not(' + cp + csep + ', ' + cp + cpheader + ')').first().addClass(pname + chovered);
+                    $curr = $hovered.removeClass(pname + chovered).prevAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     if ($curr.length == 0) {
-                        $curr = $('p:visible:not(' + cp + csep + '):last', $div[0]).addClass(pname + chovered);
+                        $curr = $('p:visible' + notHeaderSelector + ':last', $div[0]).addClass(pname + chovered);
                     }
                     offset = $curr.position().top - $div.position().top;
+                    console.log(offset);
                     if (offset < $curr.outerHeight() * 3) {
-                        $div.scrollTop(scrollTop - $curr.outerHeight());
+                        $div.scrollTop(scrollTop - -offset - $curr.outerHeight() * 3);
                     } else if (offset > $div.height()) {
-                        $div.scrollTop($div[0].scrollHeight);
+                        $div.scrollTop(scrollTop + offset - $curr.outerHeight() * 3); // to the last (was $div[0].scrollHeight)
                     }
                     if (fillOnArrow) {
                         this.value = $curr.find(cp + cmainspan).text();
@@ -696,7 +703,29 @@
             $item.fadeOut(O.animation.duration);
             $t.closest(cp).children('select').trigger('change', [true]);
         });
-        if (documentListenerAdded == false) {
+        // scroll listener is for ajax loading
+        $(cp + clist, this).scroll(function(e) {
+            var $t = $(this), $select = $T.children('select');
+            var currentScrollTop = $t.scrollTop();
+            var overhead = 50;
+            if (currentScrollTop > $t.data('scrollTop')) { // scrolling down
+                if (this.scrollHeight - currentScrollTop - overhead < $t.height()) {
+                    if (!$T.data('pending')) {
+                        $T.data('pending', true);
+                        O.autoLoad.bottom.call($T, $select.find('option[value]:last').val());
+                    }
+                }
+            } else { // scrolling up
+                if (currentScrollTop < 200) {
+                    if (!$T.data('pending')) {
+                        $T.data('pending', true);
+                        O.autoLoad.top.call($T, $select.find('option[value]:first').val());
+                    }
+                }
+            }
+            $t.data('scrollTop', currentScrollTop);
+        }).data('scrollTop', 0);
+        if (!documentListenerAdded) {
             documentListenerAdded = true;
             $(document).bind('click.' + pname, function() {
                 slide.call($(cp + clist), 'up');
@@ -849,7 +878,7 @@
         $t.closest(cp).children(cp + cdisplay).focus(); // do not leave focus to keep escape key working as it should
     }
 
-    function pFillFunc(data, opts) {
+    function pFillFunc(data, prepend) {
         var settings = this.data(pname);
         var $select = this.find('select'), $div = this.find(cp + clist);
         for (var i = 0; i < data.length; i++) {
@@ -862,10 +891,15 @@
                 var $option = $('<option />');
             } else { // regular item
                 $option = $('<option />').val(data[i].value).text(data[i].text);
-                $p = opts.pFillFunc.call(this, data[i], settings);
+                $p = settings.pFillFunc.call(this, data[i], settings);
             }
-            $select.append($option);
-            $div.append($p);
+            if (prepend) {
+                $select.prepend($option);
+                $div.prepend($p);
+            } else {
+                $select.append($option);
+                $div.append($p);
+            }
         }
     }
 

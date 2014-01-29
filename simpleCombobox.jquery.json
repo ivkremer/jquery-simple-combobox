@@ -1,7 +1,7 @@
 {
     "name": "simpleCombobox",
     "description": "A combobox plugin",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "licenses": [
         {
             "type": "MIT",
@@ -20,7 +20,7 @@
 		"autocomplete"
     ],
     "author": {
-        "url": "http://kremer.pro",
+        "url": "https://github.com/ivkremer",
         "name": "Ilya Kremer"
     },
     "maintainers": [{
