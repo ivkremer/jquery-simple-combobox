@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.5 (2014-01-30): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.6 (2014-01-31): jQuery combobox plugin | (c) 2013 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
  
@@ -10,7 +10,7 @@
 
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
-// TODO scroll the div so the current element is visible when arrow up/down key is pressed
+// TODO implement items removal (for infinite number of items)
 /**
  * Core architecture taken from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code.
@@ -122,6 +122,9 @@
             if (opts.wrap == true) {
                 $div.css('white-space', 'normal');
             }
+            if (opts.autoLoad != $.noop) {
+                opts.loopScrolling = false; // there is no way to support this feature when auto loading more items
+            }
             addListeners.call(this);
             this.data(pname + '-init', true); // true says that it is right after initialization, it is necessary for callback
             return methods.fill.call(this, opts.data); // (will be set to false after filling)
@@ -130,7 +133,7 @@
          * Fills the combobox with specified data or using options list in select if no data given.
          * @see comments in defaults
          * @param {Array} data array of data objects. See comments in defaults
-         * @param {Integer} appendMode flag defining if to append (1) or prepend (2) data to existing items
+         * @param {Number} appendMode flag defining if to append (1) or prepend (2) data to existing items
          * @returns {Object} jQuery object
          */
         fill: function(data, appendMode) {
@@ -485,6 +488,7 @@
                 var $div = $combobox.children(cp + clist);
                 var $hovered = $(cp + chovered, $div[0]), $curr, offset;
                 var $first = $('p:first', $div[0]);
+                var cycle = O.loopScrolling;
                 var notHeaderSelector = ':not(' + cp + csep + ', ' + cp + cpheader + ')';
             } else {
                 return;
@@ -507,6 +511,11 @@
                         $curr = $first.nextAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     }
                 } else {
+                    if (!cycle) {
+                        if (!$hovered.nextAll(':visible' + notHeaderSelector).first().length) {
+                            return;
+                        }
+                    }
                     $curr = $hovered.removeClass(pname + chovered).nextAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     if ($curr.length == 0) {
                         if ($first.is(':visible')) {
@@ -519,11 +528,12 @@
                         $curr = $first;
                     }
                     offset = $curr.position().top - $div.position().top;
-                    if (offset + $curr.outerHeight() * 6 > $div.height()) { // keep 4 elements ahead
-                        if ((offset + $curr.outerHeight() * 6) - $div.height() > $curr.outerHeight() * 1.5) { // $curr is under the visible bottom border
+                    var currHeight = $curr.outerHeight();
+                    if (offset + currHeight * 6 > $div.height()) { // keep 4 elements ahead
+                        if ((offset + currHeight * 6) - $div.height() > currHeight * 1.5) { // $curr is under the visible bottom border
                             $div.scrollTop(scrollTop + offset);
                         } else { // no fix required
-                            $div.scrollTop(scrollTop + $curr.outerHeight()); // increment scrolltop
+                            $div.scrollTop(scrollTop + currHeight); // incremental scrolltop
                         }
                     } else if (offset < 0) {
                         $div.scrollTop(scrollTop - -offset);
@@ -535,16 +545,21 @@
                 }
             } else if (e.which == 38) { // arrup
                 if ($div.is(':visible')) {
+                    if (!cycle) {
+                        if (!$hovered.prevAll(':visible' + notHeaderSelector).first().length) {
+                            return;
+                        }
+                    }
                     $curr = $hovered.removeClass(pname + chovered).prevAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     if ($curr.length == 0) {
                         $curr = $('p:visible' + notHeaderSelector + ':last', $div[0]).addClass(pname + chovered);
                     }
                     offset = $curr.position().top - $div.position().top;
-                    console.log(offset);
-                    if (offset < $curr.outerHeight() * 3) {
-                        $div.scrollTop(scrollTop - -offset - $curr.outerHeight() * 3);
-                    } else if (offset > $div.height()) {
-                        $div.scrollTop(scrollTop + offset - $curr.outerHeight() * 3); // to the last (was $div[0].scrollHeight)
+                    currHeight = $curr.outerHeight();
+                    if (offset < currHeight * 3) {
+                        $div.scrollTop(scrollTop - -offset - currHeight * 3);
+                    } else if (offset > $div.height() - currHeight * 3) {
+                        $div.scrollTop(scrollTop + offset - currHeight * 3); // to the last (was $div[0].scrollHeight)
                     }
                     if (fillOnArrow) {
                         this.value = $curr.find(cp + cmainspan).text();
@@ -668,7 +683,7 @@
                     $(this).keyup();
                 }
             } else { // input.display is not empty
-                if ($T[pname]('val')) { // if value is valid
+                if ($T[pname]('val')) { // if value is valid // TODO consider does this code look good
                     var $listDiv = $T.children(cp + clist);
                     $listDiv.children().show();
                     slide.call($listDiv, 'down');
@@ -704,27 +719,29 @@
             $t.closest(cp).children('select').trigger('change', [true]);
         });
         // scroll listener is for ajax loading
-        $(cp + clist, this).scroll(function(e) {
-            var $t = $(this), $select = $T.children('select');
-            var currentScrollTop = $t.scrollTop();
-            var overhead = 50;
-            if (currentScrollTop > $t.data('scrollTop')) { // scrolling down
-                if (this.scrollHeight - currentScrollTop - overhead < $t.height()) {
-                    if (!$T.data('pending')) {
-                        $T.data('pending', true);
-                        O.autoLoad.bottom.call($T, $select.find('option[value]:last').val());
+        if (O.autoLoad != $.noop) {
+            $(cp + clist, this).scroll(function(e) {
+                var $t = $(this), $select = $T.children('select');
+                var currentScrollTop = $t.scrollTop();
+                var overhead = 50;
+                if (currentScrollTop > $t.data('scrollTop')) { // scrolling down
+                    if (this.scrollHeight - currentScrollTop - overhead < $t.height()) {
+                        if (!$T.data('pending')) {
+                            $T.data('pending', true);
+                            O.autoLoad.call($T, $select.find('option[value]:last').val(), 'bottom');
+                        }
+                    }
+                } else { // scrolling up
+                    if (currentScrollTop < $t.height() / 2) {
+                        if (!$T.data('pending')) {
+                            $T.data('pending', true);
+                            O.autoLoad.call($T, $select.find('option[value]:first').val(), 'top');
+                        }
                     }
                 }
-            } else { // scrolling up
-                if (currentScrollTop < 200) {
-                    if (!$T.data('pending')) {
-                        $T.data('pending', true);
-                        O.autoLoad.top.call($T, $select.find('option[value]:first').val());
-                    }
-                }
-            }
-            $t.data('scrollTop', currentScrollTop);
-        }).data('scrollTop', 0);
+                $t.data('scrollTop', currentScrollTop);
+            }).data('scrollTop', 0);
+        }
         if (!documentListenerAdded) {
             documentListenerAdded = true;
             $(document).bind('click.' + pname, function() {
@@ -735,7 +752,7 @@
     }
 
     /**
-     * Converts given data to final form in the most convinient way.
+     * Converts given data to final form in the most convenient way.
      * @param {Array} data data given as options.data param
      * @returns {Array|Boolean} array of data objects or false if no data were given
      */
@@ -1099,15 +1116,39 @@
          * Callback executes after finishing initialization.
          */
         callback: {
-            func: function(){}, // this refers to combobox's div holder
+            func: $.noop, // this refers to combobox's div holder
             args: [] // arguments
         },
-        beforeOpen: function(){},
-        beforeClose: function(){},
-        afterOpen: function(){},
-        afterClose: function(){}
+        beforeOpen: $.noop,
+        beforeClose: $.noop,
+        afterOpen: $.noop,
+        afterClose: $.noop,
+        /**
+         * This option is for ajax loading (appending/prepending items). This function usage is:
+         * function(value, direction) {
+         *     // value here is the edge value in the list (last for appending or first for prepending).
+         *     // direction here is the scrolling direction, which can be either 'top' or 'bottom'
+         *     // so you can do something like this:
+         *     var $t = this;
+         *     $.post('your url here' + (direction == 'top' ? '?prepend' : ''), {id: value}, function(res) {
+         *         $t.scombobox('fill', res, direction == 'top' ? 2 : 1); // 1 for prepending, 2 for appending
+         *         $t.data('pending', false); // this line is compulsory
+         *     }, 'json');
+         * }
+         */
+        autoLoad: $.noop,
+        /**
+         * Enables infinite scrolling for up and down arrows keys.
+         * When autoLoad function provided then loopScrolling is set to false.
+         */
+        loopScrolling: true
     };
 
+    /**
+     * This function lets you override the default params without touching original plugin code.
+     * Usage: $.scombobox.extendDefaults(yourDefaults);
+     * @param options {Object} your custom defaults.
+     */
     $.fn[pname].extendDefaults = function(options) {
         $.extend(true, $.fn[pname].defaults, options);
     };

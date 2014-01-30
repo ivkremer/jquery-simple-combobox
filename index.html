@@ -72,16 +72,63 @@
         <option value="01">val 01</option>
         <option value="02">val 02</option>
         <option value="03">val 03</option>
+        <option value="04">val 04</option>
+        <option value="05">val 05</option>
+        <option value="06">val 06</option>
+        <option value="07">val 07</option>
+        <option value="08">val 08</option>
+        <option value="09">val 09</option>
+        <option value="10">val 10</option>
+        <option value="11">val 11</option>
+        <option value="12">val 12</option>
+        <option value="13">val 13</option>
+        <option value="14">val 14</option>
+        <option value="15">val 15</option>
+        <option value="16">val 12</option>
+        <option value="17">val 17</option>
+        <option value="18">val 18</option>
+        <option value="19">val 19</option>
+        <option value="20">val 20</option>
+        <option value="21">val 21</option>
+        <option value="22">val 22</option>
+        <option value="23">val 23</option>
+        <option value="24">val 24</option>
+        <option value="25">val 25</option>
+        <option value="26">val 26</option>
+        <option value="27">val 27</option>
+        <option value="28">val 28</option>
+        <option value="29">val 29</option>
+        <option value="30">val 30</option>
+        <option value="31">val 31</option>
+        <option value="32">val 32</option>
+        <option value="33">val 33</option>
+        <option value="34">val 34</option>
+        <option value="35">val 35</option>
+        <option value="36">val 36</option>
+        <option value="37">val 37</option>
+        <option value="38">val 38</option>
+        <option value="39">val 39</option>
+        <option value="40">val 40</option>
+        <option value="41">val 41</option>
+        <option value="42">val 42</option>
+        <option value="43">val 43</option>
+        <option value="44">val 44</option>
+        <option value="45">val 45</option>
+        <option value="46">val 46</option>
+        <option value="47">val 47</option>
+        <option value="48">val 48</option>
     </select>
     <select id="combo-02"></select>
     <script>
         $(function() {
-            $('#combo-01').scombobox({loopScrolling: false});
+            $('#combo-01').scombobox();
             $('#combo-02').scombobox({
                 data: [{
                     value: '001', text: 'val 001'
                 }, {
                     value: '002', text: 'val 002'
+                }, {
+                    separator: true, text: 'val 003'
                 }]
             });
         });
@@ -249,6 +296,23 @@
 }</pre></td>
 </tr>
 <tr>
+    <td>autoLoad</td>
+    <td>Function</td>
+    <td>This option is for ajax loading (appending/prepending items). The usage is following:
+        <pre class="nopadding">function(value, direction) {
+    // value here is the edge value in the list (last for appending or first for prepending).
+    // direction here is the scrolling direction, which can be either 'top' or 'bottom'
+    // so you can do something like this:
+    var $t = this;
+    $.post('your url here' + (direction == 'top' ? '?prepend' : ''), {id: value}, function(res) {
+        $t.scombobox('fill', res, direction == 'top' ? 2 : 1); // 1 for prepending, 2 for appending
+        $t.data('pending', false); // this line is compulsory
+    }, 'json');
+}</pre>
+    </td>
+    <td><code>$.noop</code></td>
+</tr>
+<tr>
     <td>animation</td>
     <td>Object</td>
     <td>Animation options (combobox opening/closing).</td>
@@ -267,6 +331,11 @@
         after every combobox initialization finished. If the target set
         contains multiple comboboxes, than callback executes each time. <code>this</code> refers
         to the main combobox div (class <code>scombobox</code>).</td>
+    <td><pre class="nopadding">{
+    func: $.noop, // this refers to combobox's div holder
+    args: [] // arguments
+}</pre>
+    </td>
 </tr>
 </tbody>
 <thead>
@@ -283,9 +352,10 @@
 <tbody>
 <tr>
     <td>fill</td>
-    <td>data {Array|Object|String|undefined} data, append {Boolean} flag</td>
+    <td>data {Array|Object|String|undefined} data, appendMode {Number} flag</td>
     <td>Sets the combobox data. The data may be represented in the same way as <code>data</code> option.
-        Use <code>append</code> option to append items instead of overwriting all existing ones.
+        Use <code>appendMode</code> option to append or prepend items instead of overwriting all existing ones.
+        When using this argument <code>1</code> stands for appending and <code>2</code> for prepending.
         Despite of having <code>options</code> method described below, this method is useful because
         after using <code>options</code> method the data will be merged what may be undesired.
     </td>
