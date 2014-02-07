@@ -282,11 +282,11 @@
          */
         val: function(v) {
             var mode = this.data(pname).mode;
-            if (arguments.length == 0) {
+            if (arguments.length == 0) { // get the value
                 return mode == 'default' ?
                     (this.find(cp + cdisplay).is(':disabled') ? '' : this.find(cp + cvalue).val()) :
                     (mode == 'checkboxes' ? getValues.call(this) : null);
-            } else {
+            } else { // set the value
                 if (mode == 'default') {
                     setValue.call(this, v);
                 } else if (mode == 'checkboxes') {
@@ -426,6 +426,7 @@
             return;
         }
         $select.val(value).change();
+        $t.find(cp + cvalue).val(value);
     }
 
     /**
