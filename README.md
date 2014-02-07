@@ -22,6 +22,14 @@ console.warn()
 
 To provide IE8 support add this methods to your project (see [js/missed.js](https://github.com/ivkremer/jquery-simple-combobox/blob/master/js/missed.js) file).
 
+Thanks to
+---------
+
+[danieltim300](https://github.com/danieltim300)
+[taitranvn](https://github.com/taitranvn)
+
+For bug reporting.
+
 License
 -------
 
