@@ -94,6 +94,7 @@
 }
 .scombobox-list p input[type="checkbox"] {
     margin-right: 8px;
+	vertical-align: middle;
 }
 .scombobox-list p:hover, .scombobox-list p.scombobox-hovered {
     background-color: #E9EFFC;
