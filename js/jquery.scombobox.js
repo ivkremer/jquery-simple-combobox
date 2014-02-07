@@ -864,7 +864,8 @@
         var $t = $(this), $div = $t.parent(), $ps = $div.children('p'),
             index = $ps.index(this), duration = durations($div.parent().data(pname).animation.duration);
         var $chbox = $t.find(':checkbox');
-        $chbox.prop('checked', !$chbox.prop('checked')); // avoid clicking, change prop instead
+        // don't toggle prop('checked') if checkbox itself was clicked.
+        $(e.target).is(':checkbox') ? '' : $chbox.prop('checked', !$chbox.prop('checked')); // avoid clicking, change prop instead
         var choice = $chbox.prop('checked');
         if (e.shiftKey) { // mark between last click and current
             if ($div.data('p-clicked-index') >= 0) { // not for the first time
@@ -893,7 +894,6 @@
         });
         $div.data('p-clicked-index', index);
         $t.closest(cp).children('select').trigger('change', [true]); // do not slideup the items div
-        $t.closest(cp).children(cp + cdisplay).focus(); // do not leave focus to keep escape key working as it should
     }
 
     function pFillFunc(data, prepend) {
