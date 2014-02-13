@@ -1,8 +1,8 @@
 /**
- * jquery.simple-combobox v1.1.6 (2014-01-31): jQuery combobox plugin | (c) 2013 Ilya Kremer
+ * jquery.simple-combobox v1.1.7 (2014-02-14): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
- 
+
 // Fill free to use this jQuery plugin in any projects you want
 // while keeping the comment above on top of the script.
 // Don't forget not to remove it from a minimised version also.
@@ -11,14 +11,19 @@
 // TODO consider to use markup when filling combobox from original select options
 // TODO consider to add fadeout background for items (checkboxes mode)
 // TODO implement items removal (for infinite number of items)
+
 /**
- * Core architecture taken from http://stackoverflow.com/a/6871820/837165
- * See and change default options at the end of the code.
+ * Original plugin structure taken and extended from http://stackoverflow.com/a/6871820/837165
+ * See and change default options at the end of the code or use
+ * $.scombobox.extendDefaults(options) method if you don't feel like
+ * touching the original plugin code.
  * This plugin uses following JS native methods:
  * String.prototype.trim()
  * Object.keys()
- * console methods
+ * console object
  * so don't forget to add them to your project for full browser compatibility.
+ * You can use missed.js file for that purpose from original GitHub project:
+ * https://github.com/ivkremer/jquery-simple-combobox
  *
  * This plugin adds click listener on document, so don't forget to check if events
  * can rich it or use close method.
@@ -99,7 +104,7 @@
             if (opts.mode == 'checkboxes') {
                 this.addClass(pname + '-checkboxes');
                 this.find(cp + cdisplay).remove();
-                var $displayDiv = $(cp + cdisplay + '-div');
+                var $displayDiv = this.find(cp + cdisplay + '-div');
                 if ($displayDiv.length == 0) {
                     this.append('<div class="' + pname + cdiv +'"><div class="' + pname + cdholder + '" /></div>');
                 }
@@ -137,7 +142,7 @@
          * @returns {Object} jQuery object
          */
         fill: function(data, appendMode) {
-            var $options = this.find('select option');
+            var $options = this.find('select').children('option, optgroup');
             // don't ever rely on div content, always use select options instead
             var $div = this.find('.' + pname + clist), $select = this.find('select');
             data = normalizeData(data);
@@ -147,27 +152,40 @@
                 if (opts.removeDuplicates) {
                     removeDupsjQ($options);
                     purifyOptions($options);
-                    $options = this.find('select option'); // update after removal
+                    $options = this.find('select').children('option, optgroup'); // update after removal
                 }
                 if ($options.length == 0) {
                     // TODO restore, using $p.data(pname).key if provided instead
                 } else { // here are options:
-                    $options.each(function() {
+                    function optionsEach() {
                         var $t = $(this);
+                        var $p = $('<p />');
                         if ($t.hasClass(pname + csep)) { // separator, not an option
                             if ($t.hasClass(pname + cpheader)) { // if header text also given then add only header
-                                $div.append($('<p class="' + pname + cpheader + '" />').text($t.text()));
+                                $div.append($p.addClass(pname + cpheader).text($t.text()));
                             } else { // else add separator itself
-                                var $p = $('<p class="' + pname + csep + '" />');
+                                $p.addClass(pname + csep);
                             }
+                        } else if (this.tagName.toLowerCase() == 'optgroup') {
+                            var label = $t.attr('label');
+                            var $innerOptions = $('option', this);
+                            $t.before('<option />'); // don't know why after doesn't work correctly
+                            $t.after($innerOptions); // unwrap it
+                            $t.remove(); // remove optgroup tag itself
+                            $div.append(label ? $p.addClass(pname + cpheader).text(label) : $p.addClass(pname + csep));
+                            $innerOptions.each(function() {
+                                $div.append($('<p />').text($(this).text()).data('value', this.value));
+                            });
+                            return;
                         } else {
-                            $p = $('<p />').append($('<span class="' + pname + cmainspan + '" />').text($t.text())).data('value', this.value);
+                            $p.append($('<span class="' + pname + cmainspan + '" />').text($t.text())).data('value', this.value);
                             if (mode == 'checkboxes') {
                                 $p.prepend('<input type="checkbox" />');
                             }
                         }
                         $div.append($p);
-                    });
+                    }
+                    $options.each(optionsEach);
                 }
             } else { // fill directly from given data
                 if (opts.removeDuplicates) {
@@ -184,8 +202,8 @@
                     $select.empty();
                     $div.empty();
                     this.children(cp + cvalue + ', ' + cp + cdisplay).val('');
-                }
-                pFillFunc.call(this, data, appendMode == 2); // if appendMode == 2, then it is prepend
+                } // TODO consider if appendMode == 2 is not a stupid piece of code
+                renderItems.call(this, data, appendMode == 2); // if appendMode == 2, then it is prepend
             }
             if (this.data(pname + '-init')) {
                 opts.callback.func.apply(this, opts.callback.args);
@@ -279,7 +297,7 @@
          * Value returns as string in the default mode and as an array of values where items were
          * checked in checkboxes mode.
          * If combobox is disabled then empty string is returned.
-         */
+         */ // TODO add the second parameter: flag if trigger changing the value (now it is triggering by default)
         val: function(v) {
             var mode = this.data(pname).mode;
             if (arguments.length == 0) { // get the value
@@ -391,26 +409,23 @@
     }
 
     function getValues() { // for checkbox mode
-        var values = [];
-        var $paragraphs = this.find(cp + clist + ' p');
-        for (var i = 0; i < $paragraphs.length; i++) {
-            if ($($paragraphs[i]).find(':checkbox').is(':checked')) {
-                values.push($($paragraphs[i]).data('value'));
-            }
-        }
-        return values;
+        return JSON.parse(this.find(cp + cvalue).val() || '[]');
     }
 
-    function setValues(values) { // for checkboxes mode
-        var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = '[';
+    function setValues(values) { // for checkboxes mode; this refers to combobox
+        var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = [];
+        var $lastChecked;
         for (var i = 0; i < $paragraphs.length; i++) {
-            var $p = $($paragraphs[i]), ind;
-            if ((ind = values.indexOf($p.data('value'))) >= 0) {
-                $p.find(':checkbox').prop('checked', true);
-                arrV += values[ind] + ','
+            var $p = $paragraphs.eq(i), ind = values.indexOf($p.data('value'));
+            if (values.indexOf($p.data('value')) >= 0) {
+                $lastChecked = $p.find(':checkbox').prop('checked', true);
+                arrV.push(values[ind]);
+            } else {
+                $p.find(':checkbox').prop('checked', false);
             }
         }
-        $vInput.val(arrV.replace(/,\s+$/, '') + ']').change();
+        $lastChecked.trigger(pname + '-chupdate', [true]);
+        $vInput.val(JSON.stringify(arrV));
     }
 
     function setValue(value) { // for default mode
@@ -418,10 +433,8 @@
         var $select = $t.children('select'), $valueInput = $t.children(cp + cvalue), $display = $t.children(cp + cdisplay);
         var $selected = $select.children('[value="' + value + '"]');
         if ($selected.length == 0) { // no such value
-            $select.children().prop('selected', false).first().prop('selected', true);
-            if ($valueInput.val() != '') {
-                $valueInput.val('').change();
-            }
+            $select.children().prop('selected', false);
+            $valueInput.val(''); // TODO make combobox return null instead of empty string (standard select behavior)
             $display.val('');
             return;
         }
@@ -614,6 +627,12 @@
             }
             slide.call($combo.children(cp + clist), 'up');
         });
+        this.on(pname + '-chupdate', cp + clist + ' p :checkbox', function(e, forRefresh) {
+            if (forRefresh) {
+                e.stopPropagation();
+                checkboxesModePClick.call($(this).parent(), e, true);
+            }
+        });
         this.on('click', cp + clist + ' p', function(e) { // value selected by clicking
             e.stopPropagation();
             if ($(this).is(cp + csep + ', ' + cp + cpheader)) {
@@ -684,7 +703,7 @@
                     $(this).keyup();
                 }
             } else { // input.display is not empty
-                if ($T[pname]('val')) { // if value is valid // TODO consider does this code look good
+                if ($T[pname]('val')) { // if value is valid
                     var $listDiv = $T.children(cp + clist);
                     $listDiv.children().show();
                     slide.call($listDiv, 'down');
@@ -789,8 +808,9 @@
 
     function purifyOptions($options) {
         for (var i = 0; i < $options.length; i++) {
-            if (!$options[i].value && !$($options[i]).hasClass(pname + csep)) { // if no value,
+            if (!$options[i].value && !$($options[i]).hasClass(pname + csep) && $options[i].tagName.toLowerCase() != 'optgroup') { // if no value,
                 // but if it is a separator, then it is no matter if there is a not empty value
+                // if this is an optgroup tag, then it will be used as a separator
                 $($options[i]).remove();
             }
         }
@@ -816,7 +836,7 @@
             for (var j = i + 1; j < a.length; j++) {
                 if (!a[i] || !a[j])
                     continue;
-                if (a[i].value == a[j].value) {
+                if (a[i].value == a[j].value && a[i].tagName.toLowerCase() != 'optgroup') {
                     $(a[i]).remove();
                 }
             }
@@ -860,24 +880,28 @@
         });
     }
 
-    function checkboxesModePClick(e) { // this refers to paragraph dom element
-        var $t = $(this), $div = $t.parent(), $ps = $div.children('p'),
+    function checkboxesModePClick(e, forRefresh) { // this refers to paragraph dom element
+        var $t = $(this), $combo = $t.closest(cp), $div = $t.parent(), $ps = $div.children('p'),
             index = $ps.index(this), duration = durations($div.parent().data(pname).animation.duration);
-        var $chbox = $t.find(':checkbox');
-        // don't toggle prop('checked') if checkbox itself was clicked.
-        $(e.target).is(':checkbox') ? '' : $chbox.prop('checked', !$chbox.prop('checked')); // avoid clicking, change prop instead
-        var choice = $chbox.prop('checked');
-        if (e.shiftKey) { // mark between last click and current
-            if ($div.data('p-clicked-index') >= 0) { // not for the first time
-                var f = $div.data('p-clicked-index');
-                var from = f < index ? f : index, to = f < index ? index : f;
-                for (var i = from; i <= to; i++) {
-                    $($ps[i]).find(':checkbox').prop('checked', choice);
+        if (!forRefresh) {
+            var $chbox = $t.find(':checkbox');
+            // don't toggle prop('checked') if checkbox itself was clicked.
+            if (!$(e.target).is(':checkbox')) {
+                $chbox.prop('checked', !$chbox.prop('checked')); // avoid clicking, change prop instead
+            }
+            var choice = $chbox.prop('checked');
+            if (e.shiftKey) { // mark between last click and current
+                if ($div.data('p-clicked-index') >= 0) { // not for the first time
+                    var f = $div.data('p-clicked-index');
+                    var from = f < index ? f : index, to = f < index ? index : f;
+                    for (var i = from; i <= to; i++) {
+                        $($ps[i]).find(':checkbox').prop('checked', choice);
+                    }
                 }
             }
         }
-        var $dispDivHolder = $(cp + cdholder).prepend('<span />');
-        $(cp + cdholder).fadeOut(duration / 5, function() {
+        var $dispDivHolder = $combo.find(cp + cdholder).prepend('<span />');
+        $combo.find(cp + cdholder).fadeOut(duration / 5, function() {
             $dispDivHolder.empty().show();
             // get all selected properties
             $ps.each(function(i) {
@@ -896,21 +920,29 @@
         $t.closest(cp).children('select').trigger('change', [true]); // do not slideup the items div
     }
 
-    function pFillFunc(data, prepend) {
+    /**
+     * @param items
+     * @param prepend flag if prepend instead of appending
+     */
+    function renderItems(items, prepend) {
         var settings = this.data(pname);
         var $select = this.find('select'), $div = this.find(cp + clist);
-        for (var i = 0; i < data.length; i++) {
-            if (data[i].hasOwnProperty('separator')) { // if separator given then
-                if (data[i].hasOwnProperty('header')) { // if header text also given then add only header
-                    $p = $('<p class="' + pname + cpheader + '" />').text(data[i].header);
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].hasOwnProperty('separator')) { // if separator given then
+                if (items[i].hasOwnProperty('header')) { // if header text also given then add only header
+                    $p = $('<p class="' + pname + cpheader + '" />').text(items[i].header);
                 } else { // else add separator itself
                     var $p = $('<p class="' + pname + csep + '" />');
                 }
                 var $option = $('<option />');
             } else { // regular item
-                $option = $('<option />').val(data[i].value).text(data[i].text);
-                $p = settings.pFillFunc.call(this, data[i], settings);
+                $option = $('<option />').val(items[i].value).text(items[i].text);
+                $p = settings.pFillFunc.call(this, items[i], settings);
+                if (settings.mode == 'checkboxes') {
+                    $p.prepend('<input type="checkbox" />');
+                }
             }
+            $p.data('value', items[i].value);
             if (prepend) {
                 $select.prepend($option);
                 $div.prepend($p);
@@ -957,8 +989,11 @@
             if (this.length == 0) { // method called on empty collection
                 return this;
             }
+            if (this.data(pname + '-init') == null) { // it could be legally false, but not undefined
+                $.error('Calling ' + pname + '.' + actOrOpts + ' prior to initialization');
+            }
             var method = methods[actOrOpts];
-            if (!methods[actOrOpts]) {
+            if (!method) {
                 $.error('No such method: ' + method + ' in jQuery.' + pname + '()');
             }
         } else if (typeof actOrOpts == 'object' || actOrOpts == null) {
@@ -1054,27 +1089,21 @@
         mode: 'default',
         /**
          * Don't forget to change pFillFunc if necessary when you change the markup.
-         * Img hides if no imgsrc given by default (see pFillFunc)
          * <span class="mainspan"></span> is required to use marker highlighting while typing. Highlighting is only working for the text
          * in this span. That means filter does not apply to additional text. See data parameter.
          */
-        pMarkup: '<img src="${imgsrc}" /><span class="' + pname + cmainspan + '">${text}</span> <span>${additional}</span>',
+        pMarkup: '<span class="' + pname + cmainspan + '">${text}</span> <span>${additional}</span>',
         /**
-         * Change replacements lines in this function if necessary after changing pMarkup
+         * Change replacements lines in this function if necessary after changing pMarkup.
          * this refers to combobox
          * @param item {Object} item from data array
          * @param options {Object} plugin instance properties
          */
         pFillFunc: function(item, options) {
-            var $p = $('<p />').html(options.pMarkup
+            return $('<p />').html(options.pMarkup
                 .replace('${text}', item.text)
                 .replace('${additional}', item.additional ? item.additional : '')
-                .replace('${imgsrc}', item.imgsrc || '')
             );
-            if (typeof item.imgsrc != 'string') {
-                $p.find('img').hide();
-            }
-            return $p;
         },
         /**
          * Animation settings.
@@ -1130,11 +1159,11 @@
          *     // value here is the edge value in the list (last for appending or first for prepending).
          *     // direction here is the scrolling direction, which can be either 'top' or 'bottom'
          *     // so you can do something like this:
-         *     var $t = this;
+         *     var $t = $(this);
          *     $.post('your url here' + (direction == 'top' ? '?prepend' : ''), {id: value}, function(res) {
          *         $t.scombobox('fill', res, direction == 'top' ? 2 : 1); // 1 for prepending, 2 for appending
          *         $t.data('pending', false); // this line is compulsory
-         *     }, 'json');
+         *     });
          * }
          */
         autoLoad: $.noop,
