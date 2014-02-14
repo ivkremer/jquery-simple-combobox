@@ -117,7 +117,7 @@
                     + pInt($testItem.css('margin-top')) * 2
                     + pInt($testItem.css('border-top-width')) * 2
                     + pInt($dholder.css('padding-top')) * 2;
-                this.find(cp + cdisplay + '-div').height(height);
+                this.find(cp + cdisplay + '-div').css('min-height', height + 'px');
                 $testItem.remove();
             } else {
                 this.find(cp + '-display-div').remove();
