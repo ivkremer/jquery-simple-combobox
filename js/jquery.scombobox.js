@@ -412,6 +412,22 @@
         return JSON.parse(this.find(cp + cvalue).val() || '[]');
     }
 
+    /**
+     * Executes after checking a checkbox.
+     * this refers to combobox.
+     */// TODO remove duplicate code if possible
+    function updateValueInput() { // used for checkboxes mode only
+        var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = [];
+        $paragraphs.each(function() {
+            var $p = $(this);
+            var $check = $p.find(':checkbox');
+            if ($check.prop('checked')) {
+                arrV.push($p.data('value'));
+            }
+        });
+        $vInput.val(JSON.stringify(arrV));
+    }
+
     function setValues(values) { // for checkboxes mode; this refers to combobox
         var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = [];
         var $lastChecked;
@@ -621,10 +637,12 @@
                 $valueInput.data('changed', false);
                 return;
             }
-            $valueInput.change();
             if (checkboxesMode) { // no slideup for checkboxes mode
+                updateValueInput.call($combo);
+                $valueInput.change();
                 return;
             }
+            $valueInput.change();
             slide.call($combo.children(cp + clist), 'up');
         });
         this.on(pname + '-chupdate', cp + clist + ' p :checkbox', function(e, forRefresh) {
@@ -917,7 +935,7 @@
             $dispDivHolder.append('<div style="clear: both" />');
         });
         $div.data('p-clicked-index', index);
-        $t.closest(cp).children('select').trigger('change', [true]); // do not slideup the items div
+        $t.closest(cp).children('select').trigger('change', [true]); // true for do not slideup the items div
     }
 
     /**
