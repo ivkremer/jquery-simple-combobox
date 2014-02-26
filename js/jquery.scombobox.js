@@ -19,6 +19,7 @@
  * touching the original plugin code.
  * This plugin uses following JS native methods:
  * String.prototype.trim()
+ * Array.prototype.indexOf()
  * Object.keys()
  * console object
  * so don't forget to add them to your project for full browser compatibility.
