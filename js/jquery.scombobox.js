@@ -16,18 +16,20 @@
  * Original plugin structure taken and extended from http://stackoverflow.com/a/6871820/837165
  * See and change default options at the end of the code or use
  * $.scombobox.extendDefaults(options) method if you don't feel like
- * touching the original plugin code.
+ * touching the original plugin source code.
  * This plugin uses following JS native methods:
+ *
  * String.prototype.trim()
  * Array.prototype.indexOf()
  * Object.keys()
  * console object
- * so don't forget to add them to your project for full browser compatibility.
+ *
+ * so don't forget to add them to your project for better browser compatibility.
  * You can use missed.js file for that purpose from original GitHub project:
  * https://github.com/ivkremer/jquery-simple-combobox
  *
  * This plugin adds click listener on document, so don't forget to check if events
- * can rich it or use close method.
+ * can rich it or use scombobox.close method.
  * @param {Object} $ jQuery reference
  * @param {HTMLDocument} document
  * @returns {undefined}
