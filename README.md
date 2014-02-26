@@ -17,6 +17,7 @@ This plugin uses the following JS native stuff:
 ```JavaScript
 String.prototype.trim()
 Object.keys()
+Array.prototype.indexOf()
 console.warn()
 ```
 
