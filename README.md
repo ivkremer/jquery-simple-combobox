@@ -27,8 +27,9 @@ Thanks to
 
 * [danieltim300](https://github.com/danieltim300)
 * [taitranvn](https://github.com/taitranvn)
+* [joweiser](https://github.com/joweiser)
 
-For bug reporting.
+For bug reporting and improving this project.
 
 License
 -------
