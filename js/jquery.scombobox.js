@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.7 (2014-02-14): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.8 (2014-03-27): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -69,6 +69,9 @@
             }
             if (this.attr('id')) {
                 $select.removeAttr('id');
+            }
+            if ($select.attr('multiple')) {
+                this.data(pname).mode = 'checkboxes';
             }
             if ($dropdownBack.length == 0) {
                 this.append('<div class="' + pname + cddback + '" />');
@@ -428,6 +431,7 @@
                 arrV.push($p.data('value'));
             }
         });
+        $(this).children('select').val(arrV);
         $vInput.val(JSON.stringify(arrV));
     }
 
@@ -443,6 +447,7 @@
                 $p.find(':checkbox').prop('checked', false);
             }
         }
+        $(this).children('select').val(values);
         $lastChecked.trigger(pname + '-chupdate', [true]);
         $vInput.val(JSON.stringify(arrV));
     }
