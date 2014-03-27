@@ -215,6 +215,14 @@
                 opts.callback.func.apply(this, opts.callback.args);
                 this.data(pname + '-init', false);
             }
+            if (mode != 'checkboxes') {
+                this[pname]('val', $options.filter('option:selected:last').val());
+            } else {
+                var selectedValues = $options.filter(':selected').map(function() {
+                    return $(this).val();
+                }).get();
+                this[pname]('val', selectedValues);
+            }
             return this;
         },
         /**
