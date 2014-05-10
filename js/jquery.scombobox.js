@@ -883,7 +883,7 @@
      * @param backspace to fix backspace bug
      */
     function slide(dir, backspace) {
-        if (this.is(':animated'))
+        if (this.is(':animated') || !this.length)
             return;
         var options = this.parent().data(pname).animation;
         if (dir == 'up' && this.is(':hidden') && this.length == 1) {
