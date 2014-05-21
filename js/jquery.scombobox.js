@@ -659,7 +659,7 @@
                 return;
             }
             $valueInput.change();
-            slide.call($combo.children(cp + clist), 'up');
+            slide.call($combo.children(cp + clist), 'up'); // can be triggered at the page load
         });
         this.on(pname + '-chupdate', cp + clist + ' p :checkbox', function(e, forRefresh) {
             if (forRefresh) {
@@ -751,6 +751,12 @@
             slide.call($(this).siblings(cp + clist), 'down');
         });
         this.on('click', cp + cdisplay, function(e) {
+            var t = this;
+            $(cp).each(function() { // close all other comboboxes
+                if (this != t) {
+                    $(this)[pname]('close');
+                }
+            });
             e.stopPropagation();
         });
         this.on('click', cp + cddarr, function(e) {
@@ -878,18 +884,19 @@
     }
 
     /**
-     * Slides the div with list
+     * Slides the div with a list. this refers to the list
      * @param dir 'up' = collapse, 'down' = expand.
      * @param backspace to fix backspace bug
      */
     function slide(dir, backspace) {
-        if (this.is(':animated') || !this.length)
-            return;
-        var options = this.parent().data(pname).animation;
-        if (dir == 'up' && this.is(':hidden') && this.length == 1) {
+        if (this.is(':animated') || !this.length) {
             return;
         }
-        if ($.easing[options.easing] == null) {
+        if (dir == 'up' && this.is(':hidden') && this.length == 1) {
+            return; // todo put a comment: why? (one reason is probably optimization, but what is this.length == 1 for?)
+        }
+        var options = this.parent().data(pname).animation;
+        if (!$.easing[options.easing]) {
             console.warn('no such easing: ' + options.easing);
             options.easing = 'swing';
         }
