@@ -30,6 +30,7 @@ Thanks to
 * [taitranvn](https://github.com/taitranvn)
 * [joweiser](https://github.com/joweiser)
 * [dgubernatorov-softheme](https://github.com/dgubernatorov-softheme)
+* [policecomplaints](https://github.com/policecomplaints)
 
 For bug reporting and improving this project.
 
