@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.8 (2014-03-27): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.9 (2014-06-07): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -119,10 +119,10 @@
                 var $testItem = $('<div class="' + pname + cditem + '" id="' + pname + '-test-item"><div class="' + pname + cditem + '-text">x</div></div>');
                 $dholder.append($testItem.css('margin-left', '-9999px').show());
                 var height = $testItem.height()
-                    + pInt($testItem.css('padding-top')) * 2
-                    + pInt($testItem.css('margin-top')) * 2
-                    + pInt($testItem.css('border-top-width')) * 2
-                    + pInt($dholder.css('padding-top')) * 2;
+                    + pInt($testItem.css('padding-top')) + pInt($testItem.css('padding-top'))
+                    + pInt($testItem.css('margin-top')) + pInt($testItem.css('margin-top'))
+                    + pInt($testItem.css('border-top-width')) + pInt($testItem.css('border-top-width'))
+                    + pInt($dholder.css('padding-top')) + pInt($dholder.css('padding-top'));
                 this.find(cp + cdisplay + '-div').css('min-height', height + 'px');
                 $testItem.remove();
             } else {
@@ -313,10 +313,14 @@
          * If combobox is disabled then empty string is returned.
          */ // TODO add the second parameter: flag if trigger changing the value (now it is triggering by default)
         val: function(v) {
-            var mode = this.data(pname).mode;
+            var opts = this.data(pname), mode = opts.mode, allowDisplay = !opts.forbidInvalid && opts.invalidAsValue;
             if (arguments.length == 0) { // get the value
+                if (mode == 'default') {
+                    var value = this.find(cp + cvalue).val();
+                    value = !allowDisplay ? value : (value ? value : this.find(cp + cdisplay).val());
+                }
                 return mode == 'default' ?
-                    (this.find(cp + cdisplay).is(':disabled') ? '' : this.find(cp + cvalue).val()) :
+                    (this.find(cp + cdisplay).is(':disabled') ? '' : value) :
                     (mode == 'checkboxes' ? getValues.call(this) : null);
             } else { // set the value
                 if (mode == 'default') {
@@ -751,7 +755,7 @@
             slide.call($(this).siblings(cp + clist), 'down');
         });
         this.on('click', cp + cdisplay, function(e) {
-            var t = this;
+            var t = $(this).closest(cp)[0];
             $(cp).each(function() { // close all other comboboxes
                 if (this != t) {
                     $(this)[pname]('close');
@@ -1118,6 +1122,10 @@
          * When false, incorrect filled combobox search field will has invalid css class.
          */
         forbidInvalid: false,
+        /**
+         * When true, then value from visible input will be a value returned by `$(combo).scombobox('val');`
+         */
+        invalidAsValue: false,
         /**
          * If true id from select will be reassigned to the created combobox div when query target was select, like $('select').combobox()
          */
