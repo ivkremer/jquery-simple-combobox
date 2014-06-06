@@ -31,8 +31,9 @@ Thanks to
 * [joweiser](https://github.com/joweiser)
 * [dgubernatorov-softheme](https://github.com/dgubernatorov-softheme)
 * [policecomplaints](https://github.com/policecomplaints)
+* [olingerc](https://github.com/olingerc)
 
-For bug reporting and improving this project.
+For bug reporting, feature proposing and improving this project.
 
 License
 -------
