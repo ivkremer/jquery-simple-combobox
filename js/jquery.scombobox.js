@@ -844,7 +844,7 @@
 
     function purifyData(data, debug) {
         for (var i = 0; i < data.length; i++) {
-            if ((!data[i].value || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
+            if ((data[i].value == undefined || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
                 data.splice(i, 1);
             }
         }
