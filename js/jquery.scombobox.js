@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.9 (2014-06-07): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.10 (2014-06-08): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -35,6 +35,7 @@
  * @returns {undefined}
  */
 (function($, document) {
+    'use strict';
     var pname = 'scombobox'; // plugin name, don't forget to change css prefixes if necessary
     var cp = '.' + pname;
     var cdisplay = '-display', cvalue = '-value', cinvalid = '-invalid',
@@ -163,7 +164,7 @@
                 if ($options.length == 0) {
                     // TODO restore, using $p.data(pname).key if provided instead
                 } else { // here are options:
-                    function optionsEach() {
+                    $options.each(function () {
                         var $t = $(this);
                         var $p = $('<p />');
                         if ($t.hasClass(pname + csep)) { // separator, not an option
@@ -190,8 +191,7 @@
                             }
                         }
                         $div.append($p);
-                    }
-                    $options.each(optionsEach);
+                    });
                 }
             } else { // fill directly from given data
                 if (opts.removeDuplicates) {
@@ -676,7 +676,6 @@
             if ($(this).is(cp + csep + ', ' + cp + cpheader)) {
                 return;
             }
-            clearTimeout($T.data(pname + '-invalid-timeout')); // undo checking for invalid
             $T.children(cp + cinvalid).removeClass(pname + cinvalid); // 100% it is not invalid now
             $T.children(cp + cddback).removeClass(pname + cddback + cinvalid);
             var $t = $(this), $div = $t.parent(), $ps = $div.children();
@@ -701,31 +700,6 @@
             var v = $t.val().trim().toLowerCase();
             var $select = $t.siblings('select');
             var $valueInput = $t.siblings(cp + cvalue);
-
-            function checkForInvalid() {
-                var value, v = $t.val().trim().toLowerCase();
-                // check if such value exists in options
-                $select.find('option').each(function () {
-                    if (v == $(this).text().trim().toLowerCase()) {
-                        value = this.value;
-                    }
-                });
-                var invalid = (!value && v);
-                if (invalid) {
-                    if (O.forbidInvalid) {
-                        $t.closest(cp).find(cp + cdisplay).val('').data('value', '');
-                    } else {
-                        $t.addClass(pname + cinvalid).siblings(cp + cddback)
-                            .addClass(pname + cddback + cinvalid);
-                    }
-                    $t.siblings('select, ' + cp + cvalue).val('');
-                } else {
-                    $t.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
-                }
-            }
-            // checking for invalid happens few moments later
-            // invalid class will be removed when p gets click
-            $T.data(pname + '-invalid-timeout', setTimeout(checkForInvalid, 500));
             var previousV = $valueInput.val();
             if (v == '') {
                 $valueInput.val('');
@@ -809,7 +783,9 @@
         if (!documentListenerAdded) {
             documentListenerAdded = true;
             $(document).bind('click.' + pname, function() {
-                slide.call($(cp + clist), 'up');
+                $(cp).each(function() {
+                    slide.call($(this).children(cp + clist), 'up');
+                });
             });
         }
         this.data('listenersAdded', true);
@@ -844,7 +820,7 @@
 
     function purifyData(data, debug) {
         for (var i = 0; i < data.length; i++) {
-            if ((data[i].value == undefined || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
+            if ((!data[i].value || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
                 data.splice(i, 1);
             }
         }
@@ -888,10 +864,36 @@
     }
 
     /**
-     * Slides the div with a list. this refers to the list
+     * `this` refers to combobox
+     */
+    function checkForInvalid() {
+        var $display = this.children(cp + cdisplay), $select = this.children('select'), O = this.data(pname);
+        var value, v = $display.val().trim().toLowerCase();
+        // check if such value exists in options
+        $select.find('option').each(function () {
+            if (v == $(this).text().trim().toLowerCase()) {
+                value = this.value;
+            }
+        });
+        var invalid = (!value && v);
+        if (invalid) {
+            if (O.forbidInvalid) {
+                $display.closest(cp).find(cp + cdisplay).val('').data('value', '');
+            } else {
+                $display.addClass(pname + cinvalid).siblings(cp + cddback)
+                    .addClass(pname + cddback + cinvalid);
+            }
+            $display.siblings('select, ' + cp + cvalue).val('');
+        } else {
+            $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
+        }
+    }
+
+    /**
+     * Slides the div with a list. `this` refers to the list
      * @param dir 'up' = collapse, 'down' = expand.
      * @param backspace to fix backspace bug
-     */
+     */ // TODO rename and comment backspace argument
     function slide(dir, backspace) {
         if (this.is(':animated') || !this.length) {
             return;
@@ -904,19 +906,22 @@
             console.warn('no such easing: ' + options.easing);
             options.easing = 'swing';
         }
-        var $comboDiv = this.parent(), O = $comboDiv.data(pname);
+        var $combobox = this.parent(), O = $combobox.data(pname);
         if (dir == 'up') {
-            O.beforeClose.call($comboDiv);
-            options.complete = function() {O.afterClose.call($comboDiv)};
+            O.beforeClose.call($combobox);
+            options.complete = function() {
+                checkForInvalid.call($combobox);
+                O.afterClose.call($combobox);
+            };
             this.slideUp(options).data('p-clicked-index', -1);
-            $comboDiv.children(cp + cddarr).removeClass(pname + cddarr + '-up');
+            $combobox.children(cp + cddarr).removeClass(pname + cddarr + '-up');
         } else {
-            O.beforeOpen.call($comboDiv);
-            options.complete = function() {O.afterOpen.call($comboDiv)};
+            O.beforeOpen.call($combobox);
+            options.complete = function() {O.afterOpen.call($combobox)};
             this.slideDown(options);
-            $comboDiv.children(cp + cddarr).addClass(pname + cddarr + '-up');
+            $combobox.children(cp + cddarr).addClass(pname + cddarr + '-up');
         }
-        var $display = $comboDiv.children(cp + cdisplay); // code for fillOnArrowPress feature
+        var $display = $combobox.children(cp + cdisplay); // code for fillOnArrowPress feature
         $display.each(function() {
             var $t = $(this);
             if ($t.data('fillonarrow') && !backspace) { // fix backspace bug
