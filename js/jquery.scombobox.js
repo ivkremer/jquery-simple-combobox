@@ -698,13 +698,22 @@
                 return;
             }
             var v = $t.val().trim().toLowerCase();
-            var $select = $t.siblings('select');
             var $valueInput = $t.siblings(cp + cvalue);
             var previousV = $valueInput.val();
-            if (v == '') {
+            if (v == '') { // if combo was emptied then set its value to '':
                 $valueInput.val('');
+            } else {
+                var value;
+                $t.siblings('select').find('option').each(function () {
+                    if (v == $(this).text().trim().toLowerCase()) {
+                        value = this.value;
+                    }
+                });
+                if (!value && v) {
+                    $valueInput.val(v).change().data('changed', true);
+                }
             }
-            if (previousV != $valueInput.val()) {
+            if (previousV !== $valueInput.val() && previousV !== '') {
                 $valueInput.change().data('changed', true);
             }
         });
@@ -758,7 +767,7 @@
         });
         // scroll listener is for ajax loading
         if (O.autoLoad != $.noop) {
-            $(cp + clist, this).scroll(function(e) {
+            $(cp + clist, this).scroll(function() {
                 var $t = $(this), $select = $T.children('select');
                 var currentScrollTop = $t.scrollTop();
                 var overhead = 50;
@@ -818,7 +827,7 @@
         return data; // array was given
     }
 
-    function purifyData(data, debug) {
+    function purifyData(data) {
         for (var i = 0; i < data.length; i++) {
             if ((!data[i].value || !data[i].text) && !(data[i].hasOwnProperty('separator'))) {
                 data.splice(i, 1);
@@ -960,7 +969,7 @@
                     $dispDivHolder.append(
                         $('<div />').addClass(pname + cditem)
                             .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
-                            .append($('<div />').addClass(pname + cdiremove).text('×').data('index', i)).fadeIn(duration * 1.5)
+                            .append($('<div />').addClass(pname + cdiremove).text('Ã—').data('index', i)).fadeIn(duration * 1.5)
                     );
                 }
             });
