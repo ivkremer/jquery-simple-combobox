@@ -713,7 +713,7 @@
                     $valueInput.val(v).change().data('changed', true);
                 }
             }
-            if (previousV !== $valueInput.val() && previousV !== '') {
+            if (previousV !== $valueInput.val()) {
                 $valueInput.change().data('changed', true);
             }
         });
