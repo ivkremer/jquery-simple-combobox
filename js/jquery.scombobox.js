@@ -971,7 +971,7 @@
                     $dispDivHolder.append(
                         $('<div />').addClass(pname + cditem)
                             .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
-                            .append($('<div />').addClass(pname + cdiremove).text('x').data('index', i)).fadeIn(duration * 1.5)
+                            .append($('<div />').addClass(pname + cdiremove).text('×').data('index', i)).fadeIn(duration * 1.5)
                     );
                 }
             });
