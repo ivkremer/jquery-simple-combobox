@@ -919,7 +919,9 @@
         if (dir == 'up') {
             O.beforeClose.call($combobox);
             options.complete = function() {
-                checkForInvalid.call($combobox);
+                if (O.mode != 'checkboxes') {
+                    checkForInvalid.call($combobox);
+                }
                 O.afterClose.call($combobox);
             };
             this.slideUp(options).data('p-clicked-index', -1);
@@ -969,7 +971,7 @@
                     $dispDivHolder.append(
                         $('<div />').addClass(pname + cditem)
                             .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
-                            .append($('<div />').addClass(pname + cdiremove).text('Ã—').data('index', i)).fadeIn(duration * 1.5)
+                            .append($('<div />').addClass(pname + cdiremove).text('x').data('index', i)).fadeIn(duration * 1.5)
                     );
                 }
             });
