@@ -497,7 +497,10 @@
             } else {
                 highlight = !!highlight;
             }
-            var $t = $(this), search = this.value.toLowerCase().trim();
+            var $t = $(this), search = this.value.trim();
+            if (O.filterIgnoreCase) {
+                search = search.toLowerCase();
+            }
             var $div = $t.closest(cp).children(cp + clist);
             slide.call($div, 'down', true);
             var $options = $t.closest(cp).find('select option');
@@ -512,12 +515,17 @@
                 });
                 return;
             }
-            $div.children('p').hide();
+            var hideSelector = O.hideSeparatorsOnSearch ? 'p' : 'p:not(' + cp + csep + ', ' + cp + cpheader + ')';
+            $div.children(hideSelector).hide();
             $options.each(function() {
-                var text = $(this).text().toLowerCase().trim();
+                var text = $(this).text().trim();
+                if (O.filterIgnoreCase) {
+                    text = text.toLowerCase();
+                }
                 if (fullMatch ? text.indexOf(search) >= 0 : text.indexOf(search) == 0) {
                     // check index and show corresponding paragraph
-                    var re = new RegExp(search, fullMatch ? 'g' : '');
+                    var regexFlags = O.filterIgnoreCase ? 'i' : '';
+                    var re = new RegExp(search, fullMatch ? regexFlags + 'g' : regexFlags);
                     var $ps = $div.children('p:eq(' + $options.index(this) + '):not(' + cp + csep + ', ' + cp + cpheader + ')').show();
                     if (highlight) {
                         $ps.each(function() {
@@ -1123,6 +1131,14 @@
          * Set it strictly to false to disable it anyway or to any truthy value to set it always enabled
          */
         highlight: null,
+        /**
+         * Searching ignore case.
+         */
+        filterIgnoreCase: true,
+        /**
+         *
+         */
+        hideSeparatorsOnSearch: false,
         /**
          * When false options list does not drop down on focus.
          * In this case you have to click on arrow to expand the list.
