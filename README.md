@@ -32,6 +32,7 @@ Thanks to
 * [dgubernatorov-softheme](https://github.com/dgubernatorov-softheme)
 * [policecomplaints](https://github.com/policecomplaints)
 * [olingerc](https://github.com/olingerc)
+* [allanlaal](https://github.com/allanlaal)
 
 For bug reporting, feature proposing and improving this project.
 
