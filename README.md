@@ -33,6 +33,8 @@ Thanks to
 * [policecomplaints](https://github.com/policecomplaints)
 * [olingerc](https://github.com/olingerc)
 * [allanlaal](https://github.com/allanlaal)
+* [RyanPaddyFronde](https://github.com/RyanPaddyFronde)
+* [cmeza](https://github.com/cmeza)
 
 For bug reporting, feature proposing and improving this project.
 
