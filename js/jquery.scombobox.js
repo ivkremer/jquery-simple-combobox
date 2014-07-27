@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.10 (2014-06-08): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.11 (2014-07-28): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -31,7 +31,7 @@
  * This plugin adds click listener on document, so don't forget to check if events
  * can rich it or use scombobox.close method.
  * @param {Object} $ jQuery reference
- * @param {HTMLDocument} document
+ * @param {Object} document (HTMLDocument)
  * @returns {undefined}
  */
 (function($, document) {
@@ -59,7 +59,7 @@
          * @returns {Object} jQuery object
          */
         init: function() {
-            var $div = this.find('.' + pname + clist),
+            var $div = this.find(cp + clist),
                 $select = this.find('select'),
                 $dropdownBack = this.find(cp + cddback),
                 $dropdownArr = this.find(cp + cddarr);
@@ -215,6 +215,7 @@
                 opts.callback.func.apply(this, opts.callback.args);
                 this.data(pname + '-init', false);
             }
+            $options = this.find('select').children('option'); // update
             if (mode != 'checkboxes') {
                 this[pname]('val', $options.filter('option:selected:last').val());
             } else {
@@ -854,7 +855,8 @@
     }
 
     function sortF(a, b) {
-        return a.text.trim().toLowerCase() > b.text.trim().toLowerCase() ? 1 : -1;
+        var aT = a.text.trim().toLowerCase(), bT = b.text.trim().toLowerCase();
+        return aT > bT ? 1 : aT == bT ? 0 : -1;
     }
 
     function removeDups(a) {
@@ -1005,7 +1007,7 @@
                 }
                 var $option = $('<option />');
             } else { // regular item
-                $option = $('<option />').val(items[i].value).text(items[i].text);
+                $option = $('<option />').val(items[i].value).text(items[i].text).prop('selected', !!items[i].selected);
                 $p = settings.pFillFunc.call(this, items[i], settings);
                 if (settings.mode == 'checkboxes') {
                     $p.prepend('<input type="checkbox" />');
@@ -1063,7 +1065,7 @@
             }
             var method = methods[actOrOpts];
             if (!method) {
-                $.error('No such method: ' + method + ' in jQuery.' + pname + '()');
+                $.error('No such method: ' + actOrOpts + ' in jQuery.' + pname + '()');
             }
         } else if (typeof actOrOpts == 'object' || actOrOpts == null) {
             var options = $.extend(true, {}, $.fn[pname].defaults, toCamelCase(actOrOpts));
@@ -1100,7 +1102,7 @@
         /**
          * If no data given combobox is filled relying on $('select option') list.
          * By default (see pMarkup and pFillFunc) the data is an array of objects:
-         * {value: '', text: '', additional: '', imgsrc: ''}
+         * {value: '', text: '', additional: '', selected: true/false, anyCustomOption: customValue}
          * You can also provide json or object with enumerated properties:
          * {0: {...}, 1: {...}, ...}
          */

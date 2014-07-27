@@ -126,7 +126,7 @@
                 data: [{
                     value: '001', text: 'val 001'
                 }, {
-                    value: '002', text: 'val 002'
+                    value: '002', text: 'val 002', selected: true
                 }, {
                     separator: true, text: 'val 003'
                 }, {
@@ -285,7 +285,10 @@
 <tr>
     <td>pMarkup</td>
     <td>String</td>
-    <td>The paragraph markup. Each item in a list is a paragraph tag.</td>
+    <td>The paragraph markup. Each item in a list is a paragraph tag. You can provide your own properties
+        and use it your own way in <code>pFullFunc</code>. You can use boolean <code>selected</code> property to
+        define whether this option is selected by default. In case of single-value combo the last selected
+        option value will be used.</td>
     <td><code>'&lt;img src="${imgsrc}" />&lt;span class="scombobox-mainspan">${text}&lt;/span> &lt;span>${additional}&lt;/span>'</code></td>
 </tr>
 <tr>
