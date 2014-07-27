@@ -216,13 +216,15 @@
                 this.data(pname + '-init', false);
             }
             $options = this.find('select').children('option'); // update
-            if (mode != 'checkboxes') {
-                this[pname]('val', $options.filter('option:selected:last').val());
-            } else {
-                var selectedValues = $options.filter(':selected').map(function() {
-                    return $(this).val();
-                }).get();
-                this[pname]('val', selectedValues);
+            if (!opts.empty) {
+                if (mode != 'checkboxes') {
+                    this[pname]('val', $options.filter('option:selected:last').val());
+                } else {
+                    var selectedValues = $options.filter(':selected').map(function() {
+                        return $(this).val();
+                    }).get();
+                    this[pname]('val', selectedValues);
+                }
             }
             return this;
         },
@@ -1107,6 +1109,11 @@
          * {0: {...}, 1: {...}, ...}
          */
         data: null,
+        /**
+         * Whether combobox is empty by default (true) or has an original select value (usually it the first value,
+         * but can be changed by added a `selected` prop).
+         */
+        empty: false,
         /**
          * Whether set combobox disabled.
          */
