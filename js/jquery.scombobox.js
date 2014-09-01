@@ -708,7 +708,7 @@
                 getFirstP($t.parent().children(cp + clist)).click();
                 return;
             }
-            var v = $t.val().trim().toLowerCase();
+            var v_ = $t.val().trim(), v = v_.toLowerCase();
             var $valueInput = $t.siblings(cp + cvalue);
             var previousV = $valueInput.val();
             if (v == '') { // if combo was emptied then set its value to '':
@@ -720,8 +720,8 @@
                         value = this.value;
                     }
                 });
-                if (!value && v) {
-                    $valueInput.val(v).change().data('changed', true);
+                if (!value && v) { // value not found (invalid)
+                    $valueInput.val(O.invalidAsValue ? v_ : '').change().data('changed', true);
                 }
             }
             if (previousV !== $valueInput.val()) {
