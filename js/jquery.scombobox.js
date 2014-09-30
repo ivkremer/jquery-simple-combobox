@@ -181,7 +181,7 @@
                             $t.remove(); // remove optgroup tag itself
                             $div.append(label ? $p.addClass(pname + cpheader).text(label) : $p.addClass(pname + csep));
                             $innerOptions.each(function() {
-                                $div.append($('<p />').text($(this).text()).data('value', this.value));
+                                $div.append($('<p />').append($('<span class="' + pname + cmainspan + '" />').text($(this).text())).data('value', this.value));
                             });
                             return;
                         } else {
