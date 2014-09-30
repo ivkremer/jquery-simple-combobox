@@ -28,13 +28,14 @@ Thanks to
 
 * [danieltim300](https://github.com/danieltim300)
 * [taitranvn](https://github.com/taitranvn)
-* [joweiser](https://github.com/joweiser)
-* [dgubernatorov-softheme](https://github.com/dgubernatorov-softheme)
+* [Jo Weiser](https://github.com/joweiser)
+* [Dmitry Gubernatorov](https://github.com/dgubernatorov-softheme)
 * [policecomplaints](https://github.com/policecomplaints)
-* [olingerc](https://github.com/olingerc)
-* [allanlaal](https://github.com/allanlaal)
+* [Christophe Olinger](https://github.com/olingerc)
+* [Allan Laal](https://github.com/allanlaal)
 * [RyanPaddyFronde](https://github.com/RyanPaddyFronde)
-* [cmeza](https://github.com/cmeza)
+* [Chris Meza](https://github.com/cmeza)
+* [Dima Snisarenko](https://github.com/InSearch)
 
 For bug reporting, feature proposing and improving this project.
 
