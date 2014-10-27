@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.11 (2014-07-28): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.12 (2014-10-27): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -373,20 +373,6 @@
         },
         clickDropdown: function(callback, namespace) {
             return bindOrTrig.call(this, 'click', this.children(cp + cddarr), callback, namespace);
-        },
-        /**
-         * Checks if combobox current value is invalid or marks combobox value as invalid.
-         * Marking combobox as invalid affects only on appearance.
-         * @param {Boolean} b flag
-         * @returns {Object|Boolean} jQuery object or boolean invalid status.
-         */
-        invalid: function(b) {
-            if (arguments.length == 0) {
-                this.children(cp + cdisplay).hasClass(pname + cinvalid);
-            } else {
-                this.children(cp + cdisplay).addClass(pname + cinvalid);
-            }
-            return this;
         },
         toSelect: function() {
             var $select = this.children('select').insertAfter(this);
@@ -901,10 +887,17 @@
             if (O.forbidInvalid) {
                 $display.closest(cp).find(cp + cdisplay).val('').data('value', '');
             } else {
-                $display.addClass(pname + cinvalid).siblings(cp + cddback)
-                    .addClass(pname + cddback + cinvalid);
+                // if highlightInvalid is enabled directly (default is null)
+                // or invalidAsValue is on and highlightInvalid is not its default:
+                // TODO refactor to make a more readable code:
+                if (O.highlightInvalid || (O.invalidAsValue ? (O.highlightInvalid) : O.highlightInvalid === null)) {
+                    $display.addClass(pname + cinvalid).siblings(cp + cddback)
+                            .addClass(pname + cddback + cinvalid);
+                }
             }
-            $display.siblings('select, ' + cp + cvalue).val('');
+            if (!O.invalidAsValue) { // TODO check if this code affects anything
+                $display.siblings('select, ' + cp + cvalue).val('');
+            }
         } else {
             $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
         }
@@ -1145,7 +1138,7 @@
          */
         filterIgnoreCase: true,
         /**
-         *
+         * Hide separators when typing something in a combo.
          */
         hideSeparatorsOnSearch: false,
         /**
@@ -1167,6 +1160,13 @@
          * When true, then value from visible input will be a value returned by `$(combo).scombobox('val');`
          */
         invalidAsValue: false,
+        /**
+         * Whether to mark a combobox with invalid value with red or not. By default it is turned on.
+         * When `invalidAsValue` option is set to true, `highlightInvalid` is considered false by default.
+         * If you want to enabled or disable it regardless to `invalidAsValue`, set it to a any truthy value or not null
+         * falsy value correspondingly.
+         */
+        highlightInvalid: null,
         /**
          * If true id from select will be reassigned to the created combobox div when query target was select, like $('select').combobox()
          */
