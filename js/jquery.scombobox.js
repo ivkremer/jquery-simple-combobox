@@ -316,11 +316,10 @@
          * If combobox is disabled then empty string is returned.
          */ // TODO add the second parameter: flag if trigger changing the value (now it is triggering by default)
         val: function(v) {
-            var opts = this.data(pname), mode = opts.mode, allowDisplay = !opts.forbidInvalid && opts.invalidAsValue;
+            var opts = this.data(pname), mode = opts.mode;
             if (arguments.length == 0) { // get the value
                 if (mode == 'default') {
                     var value = this.find(cp + cvalue).val();
-                    value = !allowDisplay ? value : (value ? value : this.find(cp + cdisplay).val());
                 }
                 return mode == 'default' ?
                     (this.find(cp + cdisplay).is(':disabled') ? '' : value) :
@@ -690,24 +689,26 @@
         });
         this.on('blur', cp + cdisplay, function() {
             var $t = $(this), O = $T.data(pname);
-            if (O.fillOnBlur) {
+            if (O.fillOnBlur && !O.invalidAsValue) {
                 getFirstP($t.parent().children(cp + clist)).click();
                 return;
             }
-            var v_ = $t.val().trim(), v = v_.toLowerCase();
+            var vOriginal = $t.val().trim(), v = vOriginal.toLowerCase();
             var $valueInput = $t.siblings(cp + cvalue);
             var previousV = $valueInput.val();
-            if (v == '') { // if combo was emptied then set its value to '':
+            if (!v) { // if combo was emptied then set its value to '':
                 $valueInput.val('');
             } else {
                 var value;
                 $t.siblings('select').find('option').each(function () {
-                    if (v == $(this).text().trim().toLowerCase()) {
+                    if ((O.filterIgnoreCase ? v : vOriginal) == $(this).text().trim().toLowerCase()) {
                         value = this.value;
                     }
                 });
-                if (!value && v) { // value not found (invalid)
-                    $valueInput.val(O.invalidAsValue ? v_ : '').change().data('changed', true);
+                if (!value) { // value not found (invalid)
+                    $valueInput.val(O.invalidAsValue ? vOriginal : '').change().data('changed', true);
+                } else {
+                    $valueInput.val(value).change().data('changed', true);
                 }
             }
             if (previousV !== $valueInput.val()) {
