@@ -1052,17 +1052,17 @@
      */
     $.fn[pname] = function(actOrOpts) {
         if (typeof actOrOpts == 'string') {
-            if (this.length == 0) { // method called on empty collection
-                return this;
+            if (!this.length) { // method called on empty collection
+                $.error('Calling ' + pname + '.' + actOrOpts + '() method on empty collection');
             }
-            if (this.data(pname + '-init') == null) { // it could be legally false, but not undefined
-                $.error('Calling ' + pname + '.' + actOrOpts + ' prior to initialization');
+            if (this.data(pname + '-init') == null) { // it can be legally false, but not undefined
+                $.error('Calling ' + pname + '.' + actOrOpts + '() method prior to initialization');
             }
             var method = methods[actOrOpts];
             if (!method) {
                 $.error('No such method: ' + actOrOpts + ' in jQuery.' + pname + '()');
             }
-        } else if (typeof actOrOpts == 'object' || actOrOpts == null) {
+        } else if (['object', 'undefined'].indexOf(typeof actOrOpts) >= 0) {
             var options = $.extend(true, {}, $.fn[pname].defaults, toCamelCase(actOrOpts));
         } else {
             $.error('Incorrect usage');
