@@ -36,6 +36,7 @@ Thanks to
 * [RyanPaddyFronde](https://github.com/RyanPaddyFronde)
 * [Chris Meza](https://github.com/cmeza)
 * [Dima Snisarenko](https://github.com/InSearch)
+* [John Murray](https://github.com/gjsjohnmurray)
 
 For bug reporting, feature proposing and improving this project.
 
