@@ -1144,7 +1144,7 @@
         hideSeparatorsOnSearch: false,
         /**
          * When false options list does not drop down on focus.
-         * In this case you have to click on arrow to expand the list.
+         * In this case you have to click on arrow to expand the list or start typing.
          */
         expandOnFocus: true,
         /**
