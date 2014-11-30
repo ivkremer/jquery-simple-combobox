@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.13 (2014-11-28): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.14 (2014-11-30): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -716,16 +716,21 @@
             }
         });
         this.on('focus', cp + cdisplay, function() {
+            console.log('focused');
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
                 if ($T.data(pname).expandOnFocus) {
                     $(this).keyup();
                 }
             } else { // input.display is not empty
-                if ($T[pname]('val')) { // if value is valid
-                    var $listDiv = $T.children(cp + clist);
-                    $listDiv.children().show();
-                    slide.call($listDiv, 'down');
+                if ($T.data(pname).expandOnFocusWithValue) {
+                    if ($T[pname]('val')) { // if value is valid
+                        var $listDiv = $T.children(cp + clist);
+                        $listDiv.children().show();
+                        slide.call($listDiv, 'down');
+                    } else {
+                        $(this).keyup(); // else start filtering
+                    }
                 }
             }
         });
@@ -1143,10 +1148,14 @@
          */
         hideSeparatorsOnSearch: false,
         /**
-         * When false options list does not drop down on focus.
+         * When false options list does not drop down on focus (applies on an empty combobox).
          * In this case you have to click on arrow to expand the list or start typing.
          */
         expandOnFocus: true,
+        /**
+         * When false options list does not drop down on focus (applies on a filled combobox).
+         */
+        expandOnFocusWithValue: true,
         /**
          * Set tabindex
          */
