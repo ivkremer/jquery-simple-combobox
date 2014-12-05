@@ -1,0 +1,25 @@
+{
+  "name": "jquery-simple-combobox",
+  "version": "1.1.15",
+  "homepage": "https://github.com/ivkremer/jquery-simple-combobox",
+  "authors": [
+    "Ilya Kremer <ilya@kremer.pro>"
+  ],
+  "description": "A combobox plugin",
+  "main": ["js/jquery.scombobox.min.js", "css/jquery.scombobox.min.css"],
+  "keywords": [
+    "select",
+    "multiselect",
+    "dropdown",
+    "form",
+    "input",
+    "ui",
+    "combobox",
+    "autocomplete",
+    "selectbox"
+  ],
+  "dependencies": {
+    "jquery": ">=1.7"
+  },
+  "license": "MIT"
+}
