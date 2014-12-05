@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.14 (2014-11-30): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.15 (2014-12-05): jQuery combobox plugin | (c) 2014 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -456,12 +456,14 @@
         var $t = $(this);
         var $select = $t.children('select'), $valueInput = $t.children(cp + cvalue), $display = $t.children(cp + cdisplay);
         var $selected = $select.children('[value="' + value + '"]');
-        if ($selected.length == 0) { // no such value
+        if (!$selected.length) { // no such value
+            $t.find(cp + clist + ' p').removeClass(pname + chovered);
             $select.children().prop('selected', false);
             $valueInput.val(''); // TODO make combobox return null instead of empty string (standard select behavior)
             $display.val('');
             return;
         }
+        $t.find(cp + clist + ' p').eq($selected[0].index).addClass(pname + chovered).siblings().removeClass(pname + chovered);
         $select.val(value).change();
         $t.find(cp + cvalue).val(value);
     }
@@ -716,7 +718,6 @@
             }
         });
         this.on('focus', cp + cdisplay, function() {
-            console.log('focused');
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
                 if ($T.data(pname).expandOnFocus) {
