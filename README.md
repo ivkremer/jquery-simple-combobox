@@ -37,6 +37,7 @@ Thanks to
 * [Chris Meza](https://github.com/cmeza)
 * [Dima Snisarenko](https://github.com/InSearch)
 * [John Murray](https://github.com/gjsjohnmurray)
+* [AxrayCode](https://github.com/AxrayCode1)
 
 For bug reporting, feature proposing and improving this project.
 
