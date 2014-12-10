@@ -44,7 +44,7 @@
         csep = '-separator', cpheader = '-header',
         cddback = '-dropdown-background', cddarr = '-dropdown-arrow',
         cdisabled = '-disabled';
-    var documentListenerAdded = false;
+    //var documentListenerAdded = false;
     function durations(d) {
         return ({
             fast: 200,
