@@ -44,7 +44,6 @@
         csep = '-separator', cpheader = '-header',
         cddback = '-dropdown-background', cddarr = '-dropdown-arrow',
         cdisabled = '-disabled';
-    //var documentListenerAdded = false;
     function durations(d) {
         return ({
             fast: 200,
@@ -793,14 +792,12 @@
                 $t.data('scrollTop', currentScrollTop);
             }).data('scrollTop', 0);
         }
-        if (!documentListenerAdded) {
-            documentListenerAdded = true;
-            $(document).bind('click.' + pname, function() {
-                $(cp).each(function() {
-                    slide.call($(this).children(cp + clist), 'up');
-                });
-            });
-        }
+
+
+        $(document).bind('click.' + pname, {thisIs: this}, function(e) {
+            slide.call($(e.data.thisIs).children(cp + clist), 'up');
+        });
+
         this.data('listenersAdded', true);
     }
 
