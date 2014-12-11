@@ -694,16 +694,22 @@
                 getFirstP($t.parent().children(cp + clist)).click();
                 return;
             }
-            var vOriginal = $t.val().trim(), v = vOriginal.toLowerCase();
+            var vOriginal = $t.val().trim();
             var $valueInput = $t.siblings(cp + cvalue);
             var previousV = $valueInput.val();
-            if (!v) { // if combo was emptied then set its value to '':
+            if (!vOriginal) { // if combo was emptied then set its value to '':
                 $valueInput.val('');
             } else {
                 var value;
                 $t.siblings('select').find('option').each(function () {
-                    if ((O.filterIgnoreCase ? v : vOriginal) == $(this).text().trim().toLowerCase()) {
-                        value = this.value;
+                    if (O.filterIgnoreCase) {
+                        if (vOriginal.toLowerCase() == $(this).text().trim().toLowerCase()) {
+                            value = this.value;
+                        }
+                    } else {
+                        if (vOriginal == $(this).text().trim()) {
+                            value = this.value;
+                        }
                     }
                 });
                 if (!value) { // value not found (invalid)
