@@ -544,7 +544,8 @@
             if ($div.is(':animated')) {
                 return; // keydown event is only for arrows, enter and escape
             }
-            var v = this.value.trim().toLowerCase();
+            var v = this.value.trim();
+            v = (O.filterIgnoreCase) ? v.toLowerCase() : v;
             var scrollTop = $div.scrollTop();
             if (e.which == 40) { // arrdown
                 if ($div.is(':hidden')) {
@@ -620,7 +621,9 @@
                 }
                 var valid = false;
                 $div.children('p').each(function() {
-                    if ($(cp + cmainspan, this).text().trim().toLowerCase() == v) {
+                    var candidate = $(cp + cmainspan, this).text().trim();
+                    candidate = (O.filterIgnoreCase) ? candidate.toLowerCase() : candidate;
+                    if (candidate == v) {
                         $(this).click();
                         valid = true;
                     }
@@ -885,10 +888,13 @@
      */
     function checkForInvalid() {
         var $display = this.children(cp + cdisplay), $select = this.children('select'), O = this.data(pname);
-        var value, v = $display.val().trim().toLowerCase();
+        var value, v = $display.val().trim();
+        v = (O.filterIgnoreCase) ? v.toLowerCase() : v;
         // check if such value exists in options
         $select.find('option').each(function () {
-            if (v == $(this).text().trim().toLowerCase()) {
+            var candidate = $(this).text().trim();
+            candidate = (O.filterIgnoreCase) ? candidate.toLowerCase() : candidate;
+            if (candidate == v) {
                 value = this.value;
             }
         });
