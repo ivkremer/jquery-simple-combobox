@@ -635,7 +635,8 @@
                     slide.call($div, 'up');
                 }
             } else if (e.which == 27) { // escape
-                slide.call($(this).blur().closest(cp).children(cp + clist), 'up');
+                var $t = O.blurOnEscape ? $(this).blur() : $(this);
+                slide.call($t.closest(cp).children(cp + clist), 'up');
             } else if (e.which == 9) { // tab
                 if (O.fillOnTab) {
                     if (v) {
@@ -1243,6 +1244,10 @@
          * Select hovered or first matching option on blur
          */
         fillOnBlur: false,
+        /**
+         * Blurs the search field on escape keypress
+         */
+        blurOnEscape: false,
         /**
          * Whether to set the first visible item as a value on tab key press (works only if search input is not empty).
          * If set to false then the default action is working (going to the next input on page).
