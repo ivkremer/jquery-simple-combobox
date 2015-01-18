@@ -514,13 +514,13 @@
                 if (fullMatch ? text.indexOf(search) >= 0 : text.indexOf(search) == 0) {
                     // check index and show corresponding paragraph
                     var regexFlags = O.filterIgnoreCase ? 'i' : '';
-                    var re = new RegExp(search.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1"), fullMatch ? regexFlags + 'g' : regexFlags);
+                    var re = new RegExp("(" + search.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1") + ")", fullMatch ? regexFlags + 'g' : regexFlags);
                     var $ps = $div.children('p:eq(' + $options.index(this) + '):not(' + cp + csep + ', ' + cp + cpheader + ')').show();
                     if (highlight) {
                         $ps.each(function() {
                             $(cp + '-marker', this).contents().unwrap(); // remove previous selection
                             var mainSpan = $(cp + cmainspan, this)[0];
-                            mainSpan.innerHTML = mainSpan.innerHTML.replace(re, '<span class="' + pname + '-marker">' + search + '</span>');
+                            mainSpan.innerHTML = mainSpan.innerHTML.replace(re, '<span class="' + pname + '-marker">$1</span>');
                         });
                     }
                 }
