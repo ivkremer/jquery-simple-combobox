@@ -83,6 +83,7 @@
             if (opts.mode != 'checkboxes') {
                 if (this.find(cp + cdisplay).length == 0) {
                     var $inputDisplay = $('<input class="' + pname + cdisplay + '" type="text" />');
+                    $inputDisplay.attr('title', $select.attr('title'));
                     this.append($inputDisplay);
                     this.height(
                         +$inputDisplay.css('font-size') +
@@ -112,8 +113,9 @@
                 this.find(cp + cdisplay).remove();
                 var $displayDiv = this.find(cp + cdisplay + '-div');
                 if ($displayDiv.length == 0) {
-                    this.append('<div class="' + pname + cdiv +'"><div class="' + pname + cdholder + '" /></div>');
+                    $displayDiv = this.append('<div class="' + pname + cdiv +'"><div class="' + pname + cdholder + '" /></div>');
                 }
+                $displayDiv.attr('title', $select.attr('title'));
                 $div.insertAfter(this.find(cp + cdisplay + '-div'));
                 var $dholder = this.find(cp + cdholder);
                 var $testItem = $('<div class="' + pname + cditem + '" id="' + pname + '-test-item"><div class="' + pname + cditem + '-text">x</div></div>');
@@ -166,6 +168,7 @@
                     $options.each(function () {
                         var $t = $(this);
                         var $p = $('<p />');
+                        $p.attr('title', $t.attr('title'));
                         if ($t.hasClass(pname + csep)) { // separator, not an option
                             if ($t.hasClass(pname + cpheader)) { // if header text also given then add only header
                                 $div.append($p.addClass(pname + cpheader).text($t.text()));
@@ -180,7 +183,7 @@
                             $t.remove(); // remove optgroup tag itself
                             $div.append(label ? $p.addClass(pname + cpheader).text(label) : $p.addClass(pname + csep));
                             $innerOptions.each(function() {
-                                $div.append($('<p />').append($('<span class="' + pname + cmainspan + '" />').text($(this).text())).data('value', this.value));
+                                $div.append($('<p />').attr('title', this.title).append($('<span class="' + pname + cmainspan + '" />').text($(this).text())).data('value', this.value));
                             });
                             return;
                         } else {
@@ -994,6 +997,7 @@
                         $('<div />').addClass(pname + cditem)
                             .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
                             .append($('<div />').addClass(pname + cdiremove).text('×').data('index', i)).fadeIn(duration * 1.5)
+                            .attr('title', $t.attr('title'))
                     );
                 }
             });
