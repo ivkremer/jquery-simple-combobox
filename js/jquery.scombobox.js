@@ -695,8 +695,15 @@
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
-        this.on('blur', cp + cdisplay, function() {
+        this.on('blur', cp + cdisplay, function(e) {
             var $t = $(this), O = $T.data(pname);
+	    
+	    // Do nothing in this handler if losing focus to another part of this combobox (e.g. the down/up button, or the list itself)
+            var rt = $(e.relatedTarget).closest(cp);
+            if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
+                return;
+            }
+	    
             if (O.fillOnBlur && !O.invalidAsValue) {
                 getFirstP($t.parent().children(cp + clist)).click();
                 return;
