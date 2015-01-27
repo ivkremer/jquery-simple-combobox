@@ -502,7 +502,6 @@
             // Some extra cases
             if (!e.ctrlKey && !e.shiftKey && e.which==45) return; //Insert without modifier
             if (e.ctrlKey && e.which==65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
-            if (this.value=='' && (e.which==8 || e.which==46)) return; //Backspace or Delete on empty field
             
             var fullMatch = O.fullMatch, highlight = O.highlight;
             if (fullMatch) {
