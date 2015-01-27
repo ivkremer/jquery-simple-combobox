@@ -480,9 +480,30 @@
         }
         var $T = this, O = $T.data(pname);
         this.on('keyup', cp + cdisplay + ', ' + cp + cdiv, function(e) { // filter
-            if ([13, 38, 40, 9].indexOf(e.which) >= 0) {
+            // Ignore keys that can't alter input field value on their own
+            if ([38, //Up arrow
+                 40, //Down arrow
+                 13, //Enter
+                 27, //Escape
+                 9,  //Tab
+                 37, //Left arrow
+                 39, //Right arrow
+                 17, //Ctrl
+                 18, //Alt
+                 16, //Shift
+                 20, //Caps lock
+                 33, //Page up
+                 34, //Page down
+                 35, //End
+                 36  //Home
+                 ].indexOf(e.which) >= 0) {
                 return;
             }
+            // Some extra cases
+            if (!e.ctrlKey && !e.shiftKey && e.which==45) return; //Insert without modifier
+            if (e.ctrlKey && e.which==65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
+            if (this.value=='' && (e.which==8 || e.which==46)) return; //Backspace or Delete on empty field
+            
             var fullMatch = O.fullMatch, highlight = O.highlight;
             if (fullMatch) {
                 highlight = highlight !== false;
