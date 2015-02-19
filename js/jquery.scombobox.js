@@ -456,13 +456,23 @@
 
     function setValue(value) { // for default mode
         var $t = $(this);
+        var O = this.data(pname);
         var $select = $t.children('select'), $valueInput = $t.children(cp + cvalue), $display = $t.children(cp + cdisplay);
         var $selected = $select.children('[value="' + value + '"]');
+        $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid)
         if (!$selected.length) { // no such value
             $t.find(cp + clist + ' p').removeClass(pname + chovered);
             $select.children().prop('selected', false);
-            $valueInput.val(''); // TODO make combobox return null instead of empty string (standard select behavior)
-            $display.val('');
+            if (!O.invalidAsValue) {
+                value = ''; // TODO make combobox return null instead of empty string (standard select behavior)
+            } else {
+                if (O.highlightInvalid || (O.invalidAsValue ? (O.highlightInvalid) : O.highlightInvalid === null)) {
+                    $display.addClass(pname + cinvalid).siblings(cp + cddback)
+                            .addClass(pname + cddback + cinvalid);
+                }
+            }
+            $valueInput.val(value);
+            $display.val(value);
             return;
         }
         $t.find(cp + clist + ' p').eq($selected[0].index).addClass(pname + chovered).siblings().removeClass(pname + chovered);
