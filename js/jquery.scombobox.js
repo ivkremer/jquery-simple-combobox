@@ -484,6 +484,9 @@
      * Add all the combobox logic.
      * @returns {undefined}
      */
+     
+    var blurTimer;
+     
     function addListeners() {
         if (this.data('listenersAdded')) { // prevent duplicating listeners
             return;
@@ -716,14 +719,17 @@
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
-        this.on('blur', cp + cdisplay, function(e) {
+
+        this.on('blur', cp + cdisplay, function() {
+          // Need to do some stuff only when user moves off the scombobox.
+          // Previously tried using relatedTarget property of the event to differentiate
+          // blur to another element of the control versus blur elsewhere, but this was unreliable in Chrome 40.
+          // Instead, start a 200ms timer when display element loses focus. Further down we attach a 'focus' handler
+          // to all child elements of the scombobox, cancelling the timer. If the timer isn't thus cancelled it will
+          // fire and do the necessary stuff.
+          // Note that the timer's function's bind() method is used to supply it with the correct 'this'
+          blurTimer = setTimeout( function() {
             var $t = $(this), O = $T.data(pname);
-            
-            // Do nothing in this handler if losing focus to another part of this combobox (e.g. the down/up button, or the list itself)
-            var rt = $(e.relatedTarget).closest(cp);
-            if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
-                return;
-            }
             
             slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we leave the control
             if (O.fillOnBlur && !O.invalidAsValue) {
@@ -757,7 +763,12 @@
             if (previousV !== $valueInput.val()) {
                 $valueInput.change().data('changed', true);
             }
+          }.bind(this),
+          200)
         });
+        
+        this.on('focus', cp + cdisplay + ' *', function() { blurTimer.clearTimeout();});
+        
         this.on('focus', cp + cdisplay, function() {
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
