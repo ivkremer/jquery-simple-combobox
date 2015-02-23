@@ -484,6 +484,9 @@
      * Add all the combobox logic.
      * @returns {undefined}
      */
+     
+    var blurTimer;
+     
     function addListeners() {
         if (this.data('listenersAdded')) { // prevent duplicating listeners
             return;
@@ -697,6 +700,7 @@
             }
         });
         this.on('click', cp + clist + ' p', function(e) { // value selected by clicking
+            clearTimeout(blurTimer);
             e.stopPropagation();
             if ($(this).is(cp + csep + ', ' + cp + cpheader)) {
                 return;
@@ -716,13 +720,23 @@
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
-        this.on('blur', cp + cdisplay, function(e) {
+
+        this.on('blur', cp + cdisplay, function() {
+          // Need to do some stuff only when user moves off the scombobox.
+          // Previously tried using relatedTarget property of the event to differentiate
+          // blur to another element of the control versus blur elsewhere, but this was unreliable in Chrome 40.
+          // Instead, start a 200ms timer when display element loses focus. In click
+          // handlers of control's other elements clearTimeout cancels the timer.
+          // If the timer isn't cancelled it will fire and do the necessary stuff.
+          // Note that the timer's function's bind() method is used to supply it with the correct 'this'
+          
+          blurTimer = setTimeout( function() {
             var $t = $(this), O = $T.data(pname);
             
-            // Do nothing in this handler if losing focus to another part of this combobox (e.g. the down/up button, or the list itself)
-            var rt = $(e.relatedTarget).closest(cp);
-            if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
-                return;
+            if (this===document.activeElement) {
+                // Suppress autoexpand on next focus if this blur was actually the entire window losing focus
+                // rather than this element losing focus to another element on the same window
+                $t.data('silentfocus', true);
             }
             
             slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we leave the control
@@ -757,8 +771,17 @@
             if (previousV !== $valueInput.val()) {
                 $valueInput.change().data('changed', true);
             }
+          }.bind(this),
+          200)
         });
+        
         this.on('focus', cp + cdisplay, function() {
+        
+            // Check for indicator that focus shouldn't cause expansion
+            if ($(this).data('silentfocus')) {
+                $(this).data('silentfocus', false);
+                return;
+            }
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
                 if ($T.data(pname).expandOnFocus) {
@@ -792,17 +815,19 @@
             e.stopPropagation();
         });
         this.on('click', cp + cddarr, function(e) {
+            clearTimeout(blurTimer);
             e.stopPropagation();
             var $t = $(this), $combo = $t.closest(cp);
             var $div = $combo.children(cp + clist);
             if ($div.is(':visible')) {
                 slide.call($div, 'up');
+                $combo.children(cp + cdisplay).data('silentfocus', true).focus();
             } else {
-                slide.call($div, 'down');
                 $combo.children(cp + cdisplay).focus();
             }
         });
         this.on('click', cp + cdiremove, function(e) {
+            clearTimeout(blurTimer);
             e.stopPropagation();
             var $t = $(this);
             var $item = $t.parent(), $div = $T.children(cp + clist);
