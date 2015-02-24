@@ -661,7 +661,11 @@
                 }
             } else if (e.which == 27) { // escape
                 var $t = O.blurOnEscape ? $(this).blur() : $(this);
-                slide.call($t.closest(cp).children(cp + clist), 'up');
+                // If list is down, escape slides it up and doesn't propagate outward
+                if ($div.is(':visible')) {
+                    slide.call($div, 'up');
+                    e.stopPropagation();
+                }
             } else if (e.which == 9) { // tab
                 if (O.fillOnTab) {
                     if (v) {
