@@ -391,6 +391,38 @@
 }</pre>
     </td>
 </tr>
+<tr>
+    <td>beforeOpen</td>
+    <td>Function</td>
+    <td>This event fires just before div with options slides down.
+        <code>this</code> refers to <code>&lt;div class="scombobox"&gt;&lt;/div&gt;</code>
+    </td>
+    <td><code>$.noop</code></td>
+</tr>
+<tr>
+    <td>beforeClose</td>
+    <td>Function</td>
+    <td>This event fires just before div with options slides up.
+        <code>this</code> refers to <code>&lt;div class="scombobox"&gt;&lt;/div&gt;</code>
+    </td>
+    <td><code>$.noop</code></td>
+</tr>
+<tr>
+    <td>afterOpen</td>
+    <td>Function</td>
+    <td>This event fires just after div with options slides down.
+        <code>this</code> refers to <code>&lt;div class="scombobox"&gt;&lt;/div&gt;</code>
+    </td>
+    <td><code>$.noop</code></td>
+</tr>
+<tr>
+    <td>afterClose</td>
+    <td>Function</td>
+    <td>This event fires just after div with options slides up.
+        <code>this</code> refers to <code>&lt;div class="scombobox"&gt;&lt;/div&gt;</code>
+    </td>
+    <td><code>$.noop</code></td>
+</tr>
 </tbody>
 <thead>
 <tr>
@@ -455,7 +487,7 @@
     <td>toSelect</td>
     <td></td>
     <td>Destroys the combobox, keeping only an original select. Returns a jQuery object with a select.</td>
-    <td>jQuery instance</td>
+    <td><code>jQuery instance</code></td>
 </tr>
 <tr>
     <td colspan="4">Here are methods which help with working with listeners. To add a listener, use
@@ -497,26 +529,6 @@
     <td>keypress</td>
     <td>&lt;input class="scombobox-display" /></td>
     <td colspan="2">On filter input keypress. This event does not matter when using 'checkboxes' mode, because this combobox does not have such text field.</td>
-</tr>
-<tr>
-    <td>beforeOpen</td>
-    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
-    <td colspan="2">This event fires just before div with options slides down.</td>
-</tr>
-<tr>
-    <td>beforeClose</td>
-    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
-    <td colspan="2">This event fires just before div with options slides up.</td>
-</tr>
-<tr>
-    <td>afterOpen</td>
-    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
-    <td colspan="2">This event fires just after div with options slides down.</td>
-</tr>
-<tr>
-    <td>afterClose</td>
-    <td>&lt;div class="scombobox"&gt;&lt;/div&gt;</td>
-    <td colspan="2">This event fires just after div with options slides up.</td>
 </tr>
 <tr>
     <td>click</td>

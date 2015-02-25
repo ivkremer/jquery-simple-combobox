@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.15 (2014-12-05): jQuery combobox plugin | (c) 2014 Ilya Kremer
+ * jquery.simple-combobox v1.1.16 (2015-02-25): jQuery combobox plugin | (c) 2014-2015 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
