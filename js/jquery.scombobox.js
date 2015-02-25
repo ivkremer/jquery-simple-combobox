@@ -476,8 +476,9 @@
             return;
         }
         $t.find(cp + clist + ' p').eq($selected[0].index).addClass(pname + chovered).siblings().removeClass(pname + chovered);
+
+        $valueInput.val(value).data('changed', true);
         $select.val(value).change();
-        $t.find(cp + cvalue).val(value);
     }
 
     /**
@@ -743,6 +744,7 @@
                 $t.data('silentfocus', true);
             }
             
+            $t.data('fillonarrow', false); // Prevent the slide-up from resetting value
             slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we leave the control
             if (O.fillOnBlur && !O.invalidAsValue) {
                 getFirstP($t.parent().children(cp + clist)).click();
@@ -767,9 +769,9 @@
                     }
                 });
                 if (!value) { // value not found (invalid)
-                    $valueInput.val(O.invalidAsValue ? vOriginal : '').change().data('changed', true);
+                    $valueInput.val(O.invalidAsValue ? vOriginal : '');
                 } else {
-                    $valueInput.val(value).change().data('changed', true);
+                    $valueInput.val(value);
                 }
             }
             if (previousV !== $valueInput.val()) {
