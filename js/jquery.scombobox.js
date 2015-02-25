@@ -790,11 +790,11 @@
             }
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
-                if ($T.data(pname).expandOnFocus) {
+                if (($T.data(pname).expandOnFocus)||($(this).data('expandfocus'))) {
                     $(this).keyup();
                 }
             } else { // input.display is not empty
-                if ($T.data(pname).expandOnFocusWithValue) {
+                if (($T.data(pname).expandOnFocusWithValue)||($(this).data('expandfocus'))) {
                     if ($T[pname]('val')) { // if value is valid
                         var $listDiv = $T.children(cp + clist);
                         $listDiv.children().show();
@@ -804,6 +804,7 @@
                     }
                 }
             }
+            $(this).data('expandfocus', false);
         });
         this.on('click', cp + cdisplay + '-div', function() {
             if ($T.data(pname).disabled) {
@@ -829,7 +830,7 @@
                 slide.call($div, 'up');
                 $combo.children(cp + cdisplay).data('silentfocus', true).focus();
             } else {
-                $combo.children(cp + cdisplay).focus();
+                $combo.children(cp + cdisplay).data('expandfocus', true).focus();
             }
         });
         this.on('click', cp + cdiremove, function(e) {
