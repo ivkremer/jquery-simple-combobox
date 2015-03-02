@@ -725,16 +725,24 @@
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
-
-        this.on('blur', cp + cdisplay, function() {
+        this.on('blur', cp + cdisplay, function(e) {
           // Need to do some stuff only when user moves off the scombobox.
-          // Previously tried using relatedTarget property of the event to differentiate
-          // blur to another element of the control versus blur elsewhere, but this was unreliable in Chrome 40.
-          // Instead, start a 200ms timer when display element loses focus. In click
+          
+          // Do nothing in this handler if losing focus to another part of this
+          // combobox (e.g. the down/up button, or the list itself).
+          // IE needs this technique in addition to the timer one (see below) because
+          // clicking on the dropped-down div's scroller (if present) gives a blur
+          // but no suitable subsequent event with which to cancel the timer.
+          var rt = $(e.relatedTarget).closest(cp);
+          if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
+              return;
+          }
+           
+          // The relatedTarget technique doesn't work on Chrome or on Firefox.
+          // So we start a 200ms timer when display element loses focus. In click
           // handlers of control's other elements clearTimeout cancels the timer.
           // If the timer isn't cancelled it will fire and do the necessary stuff.
           // Note that the timer's function's bind() method is used to supply it with the correct 'this'
-          
           blurTimer = setTimeout( function() {
             var $t = $(this), O = $T.data(pname);
             
@@ -780,7 +788,6 @@
           }.bind(this),
           200)
         });
-        
         this.on('focus', cp + cdisplay, function() {
         
             // Check for indicator that focus shouldn't cause expansion
