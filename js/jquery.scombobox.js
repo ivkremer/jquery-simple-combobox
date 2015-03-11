@@ -733,6 +733,7 @@
           // IE needs this technique in addition to the timer one (see below) because
           // clicking on the dropped-down div's scroller (if present) gives a blur
           // but no suitable subsequent event with which to cancel the timer.
+          var $t = $(this)
           var rt = $(e.relatedTarget).closest(cp);
           if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
               return;
