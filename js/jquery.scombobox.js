@@ -728,7 +728,7 @@
         this.on('blur', cp + cdisplay, function(e) {
           // Need to do some stuff only when user moves off the scombobox.
           
-          // Do nothing in this handler if losing focus to another part of this
+          // Try to do nothing in this handler if losing focus to another part of this
           // combobox (e.g. the down/up button, or the list itself).
           // IE needs this technique in addition to the timer one (see below) because
           // clicking on the dropped-down div's scroller (if present) gives a blur
@@ -742,52 +742,63 @@
           // The relatedTarget technique doesn't work on Chrome or on Firefox.
           // So we start a 200ms timer when display element loses focus. In click
           // handlers of control's other elements clearTimeout cancels the timer.
-          // If the timer isn't cancelled it will fire and do the necessary stuff.
-          // Note that the timer's function's bind() method is used to supply it with the correct 'this'
-          blurTimer = setTimeout( function() {
-            var $t = $(this), O = $T.data(pname);
-            
-            if (this===document.activeElement) {
-                // Suppress autoexpand on next focus if this blur was actually the entire window losing focus
-                // rather than this element losing focus to another element on the same window
-                $t.data('silentfocus', true);
-            }
-            
-            $t.data('fillonarrow', false); // Prevent the slide-up from resetting value
-            slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we leave the control
-            if (O.fillOnBlur && !O.invalidAsValue) {
-                getFirstP($t.parent().children(cp + clist)).click();
-                return;
-            }
-            var vOriginal = $t.val().trim();
-            var $valueInput = $t.siblings(cp + cvalue);
-            var previousV = $valueInput.val();
-            if (!vOriginal) { // if combo was emptied then set its value to '':
-                $valueInput.val('');
-            } else {
-                var value;
-                $t.siblings('select').find('option').each(function () {
-                    if (O.filterIgnoreCase) {
-                        if (vOriginal.toLowerCase() == $(this).text().trim().toLowerCase()) {
-                            value = this.value;
-                        }
-                    } else {
-                        if (vOriginal == $(this).text().trim()) {
-                            value = this.value;
-                        }
-                    }
-                });
-                if (!value) { // value not found (invalid)
-                    $valueInput.val(O.invalidAsValue ? vOriginal : '');
-                } else {
-                    $valueInput.val(value);
-                }
-            }
-            if (previousV !== $valueInput.val()) {
-                $valueInput.change().data('changed', true);
-            }
-          }.bind(this),
-          200)
+          // If the timer isn't cancelled it will fire and do the necessary slide up.
+          // We can't defer all the blur processing with this timer as doing so would
+          // mean that a click event on a submit button could get an outdated value
+          // from the scombobox, because the click would precede the timer event.
+          //
+          // Note that the timer's function's bind() method is used to supply it with the correct 'this'        
+          blurTimer = setTimeout(
+              function() {
+                  var $t = $(this), O = $T.data(pname);         
+                  if (this===document.activeElement) {
+                      // Suppress autoexpand on next focus if this blur was actually the entire window losing focus
+                      // rather than this element losing focus to another element on the same window
+                      $t.data('silentfocus', true);
+                  }      
+                  $t.data('fillonarrow', false); // Prevent the slide-up from resetting value        
+                  slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we're sure we've left the control
+              }.bind(this)
+              ,200
+          ); 
+          
+          //Is this necessary here? Seems to cause issues when on Chrome (cannot select list items correctly.
+          //The usefulness of fillOnBlur is debated, see https://github.com/ivkremer/jquery-simple-combobox/issues/25
+          //Either remove it entirely, or move it into the setTimeout function above.
+          /*  
+          if (O.fillOnBlur && !O.invalidAsValue) {
+              getFirstP($t.parent().children(cp + clist)).click();
+              return;
+          }
+          */
+                    
+          var vOriginal = $t.val().trim();
+          var $valueInput = $t.siblings(cp + cvalue);
+          var previousV = $valueInput.val();
+          if (!vOriginal) { // if combo was emptied then set its value to '':
+              $valueInput.val('');
+          } else {
+              var value;
+              $t.siblings('select').find('option').each(function () {
+                  if (O.filterIgnoreCase) {
+                      if (vOriginal.toLowerCase() == $(this).text().trim().toLowerCase()) {
+                          value = this.value;
+                      }
+                  } else {
+                      if (vOriginal == $(this).text().trim()) {
+                          value = this.value;
+                      }
+                  }
+              });
+              if (!value) { // value not found (invalid)
+                  $valueInput.val(O.invalidAsValue ? vOriginal : '');
+              } else {
+                  $valueInput.val(value);
+              }
+          }
+          if (previousV !== $valueInput.val()) {
+              $valueInput.change().data('changed', true);
+          }
         });
         this.on('focus', cp + cdisplay, function() {
         
