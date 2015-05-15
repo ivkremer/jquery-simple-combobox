@@ -674,7 +674,7 @@
                         // Now pick the selected item (if any)
                         var $p = $div.children(cp + chovered);
                         if ($p.length) {
-                            e.preventDefault();
+                            // e.preventDefault(); why not to go further?
                             $p.click();
                         }
                     }
