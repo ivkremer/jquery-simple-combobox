@@ -5,6 +5,7 @@
     <title>Simple Combobox Description</title>
     <link href="css/jquery.scombobox.css" rel="stylesheet" />
     <script src="js/missed.js"></script><!-- add this script for IE8 compatibility -->
+    <script src="js/latinize.js"></script><!-- add this to use filterIgnoreAccents option (convert Művész to Muvesz) -->
     <script src="js/jquery-1.10.1.min.js"></script>
     <script src="js/jquery.scombobox.min.js"></script>
     <script src="js/jquery.easing.min.js"></script>
@@ -72,12 +73,12 @@
     <select id="combo-01">
         <option value="01">val 01</option>
         <option value="02">val 02</option>
-        <option value="03">val 03</option>
+        <option value="03">Gyűszűvirág 03</option>
         <option value="04">val 04</option>
-        <option value="05">val 05</option>
-        <option value="06">val 06</option>
-        <option value="07">val 07</option>
-        <option value="08">val 08</option>
+        <option value="05">Művész Mozi 05</option>
+        <option value="06">хуёвый 06</option>
+        <option value="07">val 07</optiosn>
+        <option value="08">Cajicá 08</option>
         <option value="09">val 09</option>
         <option value="10">val 10</option>
         <option value="11">val 11</option>
@@ -216,6 +217,12 @@
     <td>Boolean</td>
     <td>Whether to search ignoring case.</td>
     <td><code>true</code></td>
+</tr>
+<tr>
+    <td>filterIgnoreAccents</td>
+    <td>Boolean</td>
+    <td>Whether to convert a needle and a haystack like 'Cajicá' or 'Hősök' to 'Cajica' and 'Hosok'.</td>
+    <td><code>false</code></td>
 </tr>
 <tr>
     <td>hideSeparatorsOnSearch</td>

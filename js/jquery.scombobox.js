@@ -1,5 +1,5 @@
 /**
- * jquery.simple-combobox v1.1.16 (2015-02-25): jQuery combobox plugin | (c) 2014-2015 Ilya Kremer
+ * jquery.simple-combobox v1.1.21 (2014-06-19): jQuery combobox plugin | (c) 2014-2015 Ilya Kremer
  * MIT license http://www.opensource.org/licenses/mit-license.php
  */
 
@@ -527,6 +527,9 @@
             if (O.filterIgnoreCase) {
                 search = search.toLowerCase();
             }
+            if (O.filterIgnoreAccents && String.prototype.latinize) {
+                search = search.latinize();
+            }
             var $div = $t.closest(cp).children(cp + clist);
             slide.call($div, 'down', true);
             var $options = $t.closest(cp).find('select option');
@@ -547,6 +550,11 @@
                 var text = $(this).text().trim();
                 if (O.filterIgnoreCase) {
                     text = text.toLowerCase();
+                }
+                if (O.filterIgnoreAccents && String.prototype.latinize) {
+                    console.log(text);
+                    text = text.latinize();
+                    console.log(text, search);
                 }
                 if (fullMatch ? text.indexOf(search) >= 0 : text.indexOf(search) == 0) {
                     // check index and show corresponding paragraph
@@ -1267,6 +1275,10 @@
          * Searching ignore case.
          */
         filterIgnoreCase: true,
+        /**
+         * Whether to convert a needle and a haystack like 'Cajicá' or 'Hősök' to 'Cajica' and 'Hosok'.
+         */
+        filterIgnoreAccents: false,
         /**
          * Hide separators when typing something in a combo.
          */
