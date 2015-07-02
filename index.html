@@ -122,8 +122,11 @@
     </select>
     <select id="combo-02"></select>
     <script>
+        $().scombobox.extendDefaults({
+            filterIgnoreAccents: true
+        });
         $(function() {
-            $('#combo-01').scombobox();
+            $('#combo-01').scombobox({delay: 500});
             $('#combo-02').scombobox({
                 data: [{
                     value: '001', text: 'val 001'
@@ -223,6 +226,12 @@
     <td>Boolean</td>
     <td>Whether to convert a needle and a haystack like 'Cajicá' or 'Hősök' to 'Cajica' and 'Hosok'.</td>
     <td><code>false</code></td>
+</tr>
+<tr>
+    <td>filterDelay</td>
+    <td>Number</td>
+    <td>Whether to debounce search function, falsy value for no debounce.</td>
+    <td><code>0</code></td>
 </tr>
 <tr>
     <td>hideSeparatorsOnSearch</td>

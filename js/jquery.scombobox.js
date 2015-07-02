@@ -493,6 +493,8 @@
             return;
         }
         var $T = this, O = $T.data(pname);
+
+        var typingTimer = null;
         this.on('keyup', cp + cdisplay + ', ' + cp + cdiv, function(e) { // filter
             // Ignore keys that can't alter input field value on their own
             if ([38, //Up arrow
@@ -513,63 +515,75 @@
                  ].indexOf(e.which) >= 0) {
                 return;
             }
-            // Some extra cases
-            if (!e.ctrlKey && !e.shiftKey && e.which==45) return; //Insert without modifier
-            if (e.ctrlKey && e.which==65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
-            
-            var fullMatch = O.fullMatch, highlight = O.highlight;
-            if (fullMatch) {
-                highlight = highlight !== false;
-            } else {
-                highlight = !!highlight;
-            }
-            var $t = $(this), search = this.value.trim();
-            if (O.filterIgnoreCase) {
-                search = search.toLowerCase();
-            }
-            if (O.filterIgnoreAccents && String.prototype.latinize) {
-                search = search.latinize();
-            }
-            var $div = $t.closest(cp).children(cp + clist);
-            slide.call($div, 'down', true);
-            var $options = $t.closest(cp).find('select option');
-            $(cp + ' ' + cp + clist).each(function() {
-                if ($div[0] != this) {
-                    slide.call($(this), 'up');
+
+            var doneTyping = function(e) {
+                // Some extra cases
+                if (!e.ctrlKey && !e.shiftKey && e.which==45) return; //Insert without modifier
+                if (e.ctrlKey && e.which==65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
+                
+                var fullMatch = O.fullMatch, highlight = O.highlight;
+                if (fullMatch) {
+                    highlight = highlight !== false;
+                } else {
+                    highlight = !!highlight;
                 }
-            });
-            if (!search) {
-                $div.children('p').show().each(function() {
-                    $(cp + '-marker', this).contents().unwrap(); // remove selection
-                });
-                return;
-            }
-            var hideSelector = O.hideSeparatorsOnSearch ? 'p' : 'p:not(' + cp + csep + ', ' + cp + cpheader + ')';
-            $div.children(hideSelector).hide();
-            $options.each(function() {
-                var text = $(this).text().trim();
+                var $t = $(this), search = this.value.trim();
                 if (O.filterIgnoreCase) {
-                    text = text.toLowerCase();
+                    search = search.toLowerCase();
                 }
                 if (O.filterIgnoreAccents && String.prototype.latinize) {
-                    console.log(text);
-                    text = text.latinize();
-                    console.log(text, search);
+                    search = search.latinize();
                 }
-                if (fullMatch ? text.indexOf(search) >= 0 : text.indexOf(search) == 0) {
-                    // check index and show corresponding paragraph
-                    var regexFlags = O.filterIgnoreCase ? 'i' : '';
-                    var re = new RegExp("(" + search.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1") + ")", fullMatch ? regexFlags + 'g' : regexFlags);
-                    var $ps = $div.children('p:eq(' + $options.index(this) + '):not(' + cp + csep + ', ' + cp + cpheader + ')').show();
-                    if (highlight) {
-                        $ps.each(function() {
-                            $(cp + '-marker', this).contents().unwrap(); // remove previous selection
-                            var mainSpan = $(cp + cmainspan, this)[0];
-                            mainSpan.innerHTML = mainSpan.innerHTML.replace(re, '<span class="' + pname + '-marker">$1</span>');
-                        });
+                var $div = $t.closest(cp).children(cp + clist);
+                slide.call($div, 'down', true);
+                var $options = $t.closest(cp).find('select option');
+                $(cp + ' ' + cp + clist).each(function() {
+                    if ($div[0] != this) {
+                        slide.call($(this), 'up');
                     }
+                });
+                if (!search) {
+                    $div.children('p').show().each(function() {
+                        $(cp + '-marker', this).contents().unwrap(); // remove selection
+                    });
+                    return;
                 }
-            });
+                var hideSelector = O.hideSeparatorsOnSearch ? 'p' : 'p:not(' + cp + csep + ', ' + cp + cpheader + ')';
+                $div.children(hideSelector).hide();
+                $options.each(function() {
+                    var text = $(this).text().trim();
+                    if (O.filterIgnoreCase) {
+                        text = text.toLowerCase();
+                    }
+                    if (O.filterIgnoreAccents && String.prototype.latinize) {
+                        text = text.latinize();
+                    }
+                    if (fullMatch ? text.indexOf(search) >= 0 : text.indexOf(search) == 0) {
+                        // check index and show corresponding paragraph
+                        var regexFlags = O.filterIgnoreCase ? 'i' : '';
+                        var re = new RegExp("(" + search.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1") + ")", fullMatch ? regexFlags + 'g' : regexFlags);
+                        var $ps = $div.children('p:eq(' + $options.index(this) + '):not(' + cp + csep + ', ' + cp + cpheader + ')').show();
+                        if (highlight) {
+                            $ps.each(function() {
+                                $(cp + '-marker', this).contents().unwrap(); // remove previous selection
+                                var mainSpan = $(cp + cmainspan, this)[0];
+                                mainSpan.innerHTML = mainSpan.innerHTML.replace(re, '<span class="' + pname + '-marker">$1</span>');
+                            });
+                        }
+                    }
+                });
+            };
+
+            var t = this;
+            var delay = O.filterDelay;
+            if (!delay) {
+                doneTyping.call(t, e);
+            } else {
+                clearTimeout(typingTimer);
+                typingTimer = setTimeout(function(){
+                    doneTyping.call(t, e);
+                }, delay);
+            }
         });
         this.on('keydown', cp + cdisplay, function(e) {
             if ([38, 40, 13, 27, 9].indexOf(e.which) >= 0) {
@@ -1272,13 +1286,17 @@
          */
         highlight: null,
         /**
-         * Searching ignore case.
+         * Whether to ignore case while filtering.
          */
         filterIgnoreCase: true,
         /**
          * Whether to convert a needle and a haystack like 'Cajicá' or 'Hősök' to 'Cajica' and 'Hosok'.
          */
         filterIgnoreAccents: false,
+        /**
+         * Whether to debounce search function, falsy value for no debounce.
+         */
+        filterDelay: 0,
         /**
          * Hide separators when typing something in a combo.
          */
@@ -1416,7 +1434,7 @@
 
     /**
      * This function lets you override the default params without touching original plugin code.
-     * Usage: $.scombobox.extendDefaults(yourDefaults);
+     * Usage: $().scombobox.extendDefaults(yourDefaults);
      * @param options {Object} your custom defaults.
      */
     $.fn[pname].extendDefaults = function(options) {
