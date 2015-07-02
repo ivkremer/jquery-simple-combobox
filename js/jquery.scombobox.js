@@ -595,7 +595,7 @@
                 var $hovered = $(cp + chovered, $div[0]), $curr, offset;
                 var $first = $('p:first', $div[0]);
                 var cycle = O.loopScrolling;
-                var notHeaderSelector = ':not(' + cp + csep + ', ' + cp + cpheader + ')';
+                var notHeaderSelector = ':not(' + cp + csep + '):not(' + cp + cpheader + ')'; // don't put both classes in single parenthesis for old jQuery versions
             } else {
                 return;
             }
@@ -652,10 +652,8 @@
                 }
             } else if (e.which == 38) { // arrup
                 if ($div.is(':visible')) {
-                    if (!cycle) {
-                        if (!$hovered.prevAll(':visible' + notHeaderSelector).first().length) {
-                            return;
-                        }
+                    if (!cycle && !$hovered.prevAll(':visible' + notHeaderSelector).first().length) {
+                        return;
                     }
                     $curr = $hovered.removeClass(pname + chovered).prevAll(':visible' + notHeaderSelector).first().addClass(pname + chovered);
                     if ($curr.length == 0) {
@@ -755,7 +753,7 @@
           // IE needs this technique in addition to the timer one (see below) because
           // clicking on the dropped-down div's scroller (if present) gives a blur
           // but no suitable subsequent event with which to cancel the timer.
-          var $t = $(this)
+          var $t = $(this);
           var rt = $(e.relatedTarget).closest(cp);
           if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
               return;
