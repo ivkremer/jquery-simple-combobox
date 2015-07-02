@@ -2,7 +2,7 @@
     "name": "simpleCombobox",
     "title": "jQuery Simple Combobox",
     "description": "A combobox plugin",
-    "version": "1.1.22",
+    "version": "1.1.23",
     "licenses": [
         {
             "type": "MIT",
