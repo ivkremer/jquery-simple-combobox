@@ -126,7 +126,7 @@
             filterIgnoreAccents: true
         });
         $(function() {
-            $('#combo-01').scombobox({filterDelay: 300});
+            $('#combo-01').scombobox({filterDelay: 300, placeholder: 'Lol'});
             $('#combo-02').scombobox({
                 data: [{
                     value: '001', text: 'val 001'
@@ -327,6 +327,12 @@
     <td><code>null</code></td>
 </tr>
 <tr>
+    <td>placeholder</td>
+    <td>String</td>
+    <td>This field sets placeholder html attribute for search input.</td>
+    <td><code>null</code></td>
+</tr>
+<tr>
     <td>reassignId</td>
     <td>Boolean</td>
     <td>Whether to reattach the <code>id</code> from original select to created combobox.</td>
@@ -474,6 +480,12 @@
     <td>b {Boolean|undefined} flag</td>
     <td><code>disabled</code> property getter and setter.</td>
     <td><code>disabled</code> status<code> | jQuery instance</code></td>
+</tr>
+<tr>
+    <td>placeholder</td>
+    <td>{String|undefined} text</td>
+    <td><code>placeholder</code> property getter and setter.</td>
+    <td><code>placeholder</code> text<code> | jQuery instance</code></td>
 </tr>
 <tr>
     <td>options</td>

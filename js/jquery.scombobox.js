@@ -84,6 +84,7 @@
                 if (this.find(cp + cdisplay).length == 0) {
                     var $inputDisplay = $('<input class="' + pname + cdisplay + '" type="text" />');
                     $inputDisplay.attr('title', $select.attr('title'));
+                    $inputDisplay.attr('placeholder', opts.placeholder);
                     this.append($inputDisplay);
                     this.height(
                         +$inputDisplay.css('font-size') +
@@ -130,6 +131,7 @@
             } else {
                 this.find(cp + '-display-div').remove();
                 $div.insertAfter(this.find(cp + cdisplay));
+
             }
             $div.css({'max-width': opts.listMaxWidth, 'max-height': opts.maxHeight});
             if (opts.wrap == true) {
@@ -398,6 +400,15 @@
                 }
             }
             return this;
+        },
+        placeholder: function(text) {
+            var $input = this.children(cp + cdisplay);
+            if (!arguments.length) {
+                return $input.attr('placeholder');
+            } else {
+                $input.attr('placeholder', text);
+                return this;
+            }
         }
     };
 
@@ -1427,7 +1438,11 @@
          * Enables infinite scrolling for up and down arrows keys.
          * When autoLoad function provided then loopScrolling is set to false.
          */
-        loopScrolling: true
+        loopScrolling: true,
+        /**
+         * Placeholder for search input.
+         */
+         placeholder: ''
     };
 
     /**
