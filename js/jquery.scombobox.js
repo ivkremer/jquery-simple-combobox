@@ -461,8 +461,10 @@
             }
         }
         $(this).children('select').val(values);
-        $lastChecked.trigger(pname + '-chupdate', [true]);
-        $vInput.val(JSON.stringify(arrV));
+        if ($lastChecked) {
+            $lastChecked.trigger(pname + '-chupdate', [true]);
+            $vInput.val(JSON.stringify(arrV));
+        }
     }
 
     function setValue(value) { // for default mode
