@@ -875,7 +875,6 @@
         });
         this.on('click', cp + cddarr, function(e) {
             clearTimeout(blurTimer);
-            e.stopPropagation();
             var $t = $(this), $combo = $t.closest(cp);
             var $div = $combo.children(cp + clist);
             if ($div.is(':visible')) {
@@ -1444,7 +1443,7 @@
         /**
          * Placeholder for search input.
          */
-         placeholder: ''
+        placeholder: ''
     };
 
     /**
