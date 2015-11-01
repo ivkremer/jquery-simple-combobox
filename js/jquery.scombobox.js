@@ -106,7 +106,7 @@
                 this.find(cp + cdisplay).prop('disabled', true);
                 this.addClass(pname + cdisabled);
             }
-            if (opts.required) {
+            if ($select.attr('required') || opts.required) {
                 this.find(cp + cdisplay).prop('required', 'required');
                 this.addClass(pname + crequired);
             }
