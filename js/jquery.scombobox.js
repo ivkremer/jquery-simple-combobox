@@ -43,7 +43,7 @@
         clist = '-list', cmainspan = '-mainspan', chovered = '-hovered',
         csep = '-separator', cpheader = '-header',
         cddback = '-dropdown-background', cddarr = '-dropdown-arrow',
-        cdisabled = '-disabled';
+        cdisabled = '-disabled', crequired = '-required';
     function durations(d) {
         return ({
             fast: 200,
@@ -105,6 +105,10 @@
             if (opts.disabled) {
                 this.find(cp + cdisplay).prop('disabled', true);
                 this.addClass(pname + cdisabled);
+            }
+            if ($select.attr('required') || opts.required) {
+                this.find(cp + cdisplay).prop('required', 'required');
+                this.addClass(pname + crequired);
             }
             if ($div.length == 0) {
                 this.append($div = $('<div class="' + pname + clist + '"></div>'));
@@ -1269,6 +1273,10 @@
          * but can be changed by added a `selected` prop).
          */
         empty: false,
+        /**
+         * Whether set required attribute.
+         */
+        required: false,
         /**
          * Whether set combobox disabled.
          */
