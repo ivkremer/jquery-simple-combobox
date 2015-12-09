@@ -834,7 +834,7 @@
               }
           }
           if (previousV !== $valueInput.val()) {
-              $valueInput.change().data('changed', true);
+              $valueInput.change();
           }
         });
         this.on('focus', cp + cdisplay, function() {
