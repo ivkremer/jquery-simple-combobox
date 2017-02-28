@@ -38,12 +38,23 @@
     'use strict';
     var pname = 'scombobox'; // plugin name, don't forget to change css prefixes if necessary
     var cp = '.' + pname;
-    var cdisplay = '-display', cvalue = '-value', cinvalid = '-invalid',
-        cdiv = cdisplay + '-div', cditem = cdiv + '-item', cdiremove = cditem + '-remove', cdholder = cdiv + '-holder',
-        clist = '-list', cmainspan = '-mainspan', chovered = '-hovered',
-        csep = '-separator', cpheader = '-header',
-        cddback = '-dropdown-background', cddarr = '-dropdown-arrow',
-        cdisabled = '-disabled', crequired = '-required';
+    var cdisplay = '-display',
+        cvalue = '-value',
+        cinvalid = '-invalid',
+        cdiv = cdisplay + '-div',
+        cditem = cdiv + '-item',
+        cdiremove = cditem + '-remove',
+        cdholder = cdiv + '-holder',
+        clist = '-list',
+        cmainspan = '-mainspan',
+        chovered = '-hovered',
+        csep = '-separator',
+        cpheader = '-header',
+        cddback = '-dropdown-background',
+        cddarr = '-dropdown-arrow',
+        cdisabled = '-disabled',
+        crequired = '-required';
+
     function durations(d) {
         return ({
             fast: 200,
@@ -86,10 +97,9 @@
                     $inputDisplay.attr('title', $select.attr('title'));
                     $inputDisplay.attr('placeholder', opts.placeholder);
                     this.append($inputDisplay);
-                    this.height(
-                        +$inputDisplay.css('font-size') +
-                            +$inputDisplay.css('padding-top') +
-                            +$inputDisplay.css('padding-bottom')
+                    this.height(+$inputDisplay.css('font-size') +
+                        +$inputDisplay.css('padding-top') +
+                        +$inputDisplay.css('padding-bottom')
                     );
                 }
             }
@@ -118,18 +128,14 @@
                 this.find(cp + cdisplay).remove();
                 var $displayDiv = this.find(cp + cdisplay + '-div');
                 if ($displayDiv.length == 0) {
-                    $displayDiv = this.append('<div class="' + pname + cdiv +'"><div class="' + pname + cdholder + '" /></div>');
+                    $displayDiv = this.append('<div class="' + pname + cdiv + '"><div class="' + pname + cdholder + '" /></div>');
                 }
                 $displayDiv.attr('title', $select.attr('title'));
                 $div.insertAfter(this.find(cp + cdisplay + '-div'));
                 var $dholder = this.find(cp + cdholder);
                 var $testItem = $('<div class="' + pname + cditem + '" id="' + pname + '-test-item"><div class="' + pname + cditem + '-text">x</div></div>');
                 $dholder.append($testItem.css('margin-left', '-9999px').show());
-                var height = $testItem.height()
-                    + pInt($testItem.css('padding-top')) + pInt($testItem.css('padding-top'))
-                    + pInt($testItem.css('margin-top')) + pInt($testItem.css('margin-top'))
-                    + pInt($testItem.css('border-top-width')) + pInt($testItem.css('border-top-width'))
-                    + pInt($dholder.css('padding-top')) + pInt($dholder.css('padding-top'));
+                var height = $testItem.height() + pInt($testItem.css('padding-top')) + pInt($testItem.css('padding-top')) + pInt($testItem.css('margin-top')) + pInt($testItem.css('margin-top')) + pInt($testItem.css('border-top-width')) + pInt($testItem.css('border-top-width')) + pInt($dholder.css('padding-top')) + pInt($dholder.css('padding-top'));
                 this.find(cp + cdisplay + '-div').css('min-height', height + 'px');
                 $testItem.remove();
             } else {
@@ -137,7 +143,7 @@
                 $div.insertAfter(this.find(cp + cdisplay));
 
             }
-            $div.css({'max-width': opts.listMaxWidth, 'max-height': opts.maxHeight});
+            $div.css({ 'max-width': opts.listMaxWidth, 'max-height': opts.maxHeight });
             if (opts.wrap == true) {
                 $div.css('white-space', 'normal');
             }
@@ -158,7 +164,8 @@
         fill: function(data, appendMode) {
             var $options = this.find('select').children('option, optgroup');
             // don't ever rely on div content, always use select options instead
-            var $div = this.find('.' + pname + clist), $select = this.find('select');
+            var $div = this.find('.' + pname + clist),
+                $select = this.find('select');
             data = normalizeData(data);
             var opts = this.data(pname);
             var mode = opts.mode;
@@ -171,7 +178,7 @@
                 if ($options.length == 0) {
                     // TODO restore, using $p.data(pname).key if provided instead
                 } else { // here are options:
-                    $options.each(function () {
+                    $options.each(function() {
                         var $t = $(this);
                         var $p = $('<p />');
                         $p.attr('title', $t.attr('title'));
@@ -324,7 +331,8 @@
          * If combobox is disabled then empty string is returned.
          */ // TODO add the second parameter: flag if trigger changing the value (now it is triggering by default)
         val: function(v) {
-            var opts = this.data(pname), mode = opts.mode;
+            var opts = this.data(pname),
+                mode = opts.mode;
             if (arguments.length == 0) { // get the value
                 if (mode == 'default') {
                     var value = this.find(cp + cvalue).val();
@@ -438,9 +446,11 @@
     /**
      * Executes after checking a checkbox.
      * this refers to combobox.
-     */// TODO remove duplicate code if possible
+     */ // TODO remove duplicate code if possible
     function updateValueInput() { // used for checkboxes mode only
-        var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = [];
+        var $paragraphs = $(this).find(cp + clist + ' p'),
+            $vInput = $(this).children(cp + cvalue),
+            arrV = [];
         $paragraphs.each(function() {
             var $p = $(this);
             var $check = $p.find(':checkbox');
@@ -453,10 +463,13 @@
     }
 
     function setValues(values) { // for checkboxes mode; this refers to combobox
-        var $paragraphs = $(this).find(cp + clist + ' p'), $vInput = $(this).children(cp + cvalue), arrV = [];
+        var $paragraphs = $(this).find(cp + clist + ' p'),
+            $vInput = $(this).children(cp + cvalue),
+            arrV = [];
         var $lastChecked;
         for (var i = 0; i < $paragraphs.length; i++) {
-            var $p = $paragraphs.eq(i), ind = values.indexOf($p.data('value'));
+            var $p = $paragraphs.eq(i),
+                ind = values.indexOf($p.data('value'));
             if (values.indexOf($p.data('value')) >= 0) {
                 $lastChecked = $p.find(':checkbox').prop('checked', true);
                 arrV.push(values[ind]);
@@ -474,8 +487,16 @@
     function setValue(value) { // for default mode
         var $t = $(this);
         var O = this.data(pname);
-        var $select = $t.children('select'), $valueInput = $t.children(cp + cvalue), $display = $t.children(cp + cdisplay);
-        var $selected = $select.children('[value="' + value + '"]');
+        var $select = $t.children('select'),
+            $valueInput = $t.children(cp + cvalue),
+            $display = $t.children(cp + cdisplay);
+        //find the option whose 'value' is (=) to the given value in the select element
+        var $selected = $select
+            .find('option')
+            .filter(function() {
+                return this.value == value;
+            });
+
         $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid)
         if (!$selected.length) { // no such value
             $t.find(cp + clist + ' p').removeClass(pname + chovered);
@@ -485,7 +506,7 @@
             } else {
                 if (O.highlightInvalid || (O.invalidAsValue ? (O.highlightInvalid) : O.highlightInvalid === null)) {
                     $display.addClass(pname + cinvalid).siblings(cp + cddback)
-                            .addClass(pname + cddback + cinvalid);
+                        .addClass(pname + cddback + cinvalid);
                 }
             }
             $valueInput.val(value);
@@ -502,49 +523,52 @@
      * Add all the combobox logic.
      * @returns {undefined}
      */
-     
+
     var blurTimer;
-     
+
     function addListeners() {
         if (this.data('listenersAdded')) { // prevent duplicating listeners
             return;
         }
-        var $T = this, O = $T.data(pname);
+        var $T = this,
+            O = $T.data(pname);
 
         var typingTimer = null;
         this.on('keyup', cp + cdisplay + ', ' + cp + cdiv, function(e) { // filter
             // Ignore keys that can't alter input field value on their own
             if ([38, //Up arrow
-                 40, //Down arrow
-                 13, //Enter
-                 27, //Escape
-                 9,  //Tab
-                 37, //Left arrow
-                 39, //Right arrow
-                 17, //Ctrl
-                 18, //Alt
-                 16, //Shift
-                 20, //Caps lock
-                 33, //Page up
-                 34, //Page down
-                 35, //End
-                 36  //Home
-                 ].indexOf(e.which) >= 0) {
+                    40, //Down arrow
+                    13, //Enter
+                    27, //Escape
+                    9, //Tab
+                    37, //Left arrow
+                    39, //Right arrow
+                    17, //Ctrl
+                    18, //Alt
+                    16, //Shift
+                    20, //Caps lock
+                    33, //Page up
+                    34, //Page down
+                    35, //End
+                    36 //Home
+                ].indexOf(e.which) >= 0) {
                 return;
             }
 
             var doneTyping = function(e) {
                 // Some extra cases
-                if (!e.ctrlKey && !e.shiftKey && e.which==45) return; //Insert without modifier
-                if (e.ctrlKey && e.which==65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
-                
-                var fullMatch = O.fullMatch, highlight = O.highlight;
+                if (!e.ctrlKey && !e.shiftKey && e.which == 45) return; //Insert without modifier
+                if (e.ctrlKey && e.which == 65) return; //Ctrl+A; imperfect because sometimes we release the A *after* the Ctrl
+
+                var fullMatch = O.fullMatch,
+                    highlight = O.highlight;
                 if (fullMatch) {
                     highlight = highlight !== false;
                 } else {
                     highlight = !!highlight;
                 }
-                var $t = $(this), search = this.value.trim();
+                var $t = $(this),
+                    search = this.value.trim();
                 if (O.filterIgnoreCase) {
                     search = search.toLowerCase();
                 }
@@ -597,7 +621,7 @@
                 doneTyping.call(t, e);
             } else {
                 clearTimeout(typingTimer);
-                typingTimer = setTimeout(function(){
+                typingTimer = setTimeout(function() {
                     doneTyping.call(t, e);
                 }, delay);
             }
@@ -609,7 +633,8 @@
                 }
                 var $combobox = $(this).closest(cp);
                 var $div = $combobox.children(cp + clist);
-                var $hovered = $(cp + chovered, $div[0]), $curr, offset;
+                var $hovered = $(cp + chovered, $div[0]),
+                    $curr, offset;
                 var $first = $('p:first', $div[0]);
                 var cycle = O.loopScrolling;
                 var notHeaderSelector = ':not(' + cp + csep + '):not(' + cp + cpheader + ')'; // don't put both classes in single parenthesis for old jQuery versions
@@ -749,7 +774,9 @@
             }
             $T.children(cp + cinvalid).removeClass(pname + cinvalid); // 100% it is not invalid now
             $T.children(cp + cddback).removeClass(pname + cddback + cinvalid);
-            var $t = $(this), $div = $t.parent(), $ps = $div.children();
+            var $t = $(this),
+                $div = $t.parent(),
+                $ps = $div.children();
             var index = $ps.index(this);
             if ($T.data(pname).mode == 'checkboxes') {
                 checkboxesModePClick.call(this, e); // process checking
@@ -763,82 +790,82 @@
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
         });
         this.on('blur', cp + cdisplay, function(e) {
-          // Need to do some stuff only when user moves off the scombobox.
-          
-          // Try to do nothing in this handler if losing focus to another part of this
-          // combobox (e.g. the down/up button, or the list itself).
-          // IE needs this technique in addition to the timer one (see below) because
-          // clicking on the dropped-down div's scroller (if present) gives a blur
-          // but no suitable subsequent event with which to cancel the timer.
-          var $t = $(this);
-          var rt = $(e.relatedTarget).closest(cp);
-          if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
-              return;
-          }
-           
-          // The relatedTarget technique doesn't work on Chrome or on Firefox.
-          // So we start a 200ms timer when display element loses focus. In click
-          // handlers of control's other elements clearTimeout cancels the timer.
-          // If the timer isn't cancelled it will fire and do the necessary slide up.
-          // We can't defer all the blur processing with this timer as doing so would
-          // mean that a click event on a submit button could get an outdated value
-          // from the scombobox, because the click would precede the timer event.
-          //
-          // Note that the timer's function's bind() method is used to supply it with the correct 'this'        
-          blurTimer = setTimeout(
-              function() {
-                  var $t = $(this), O = $T.data(pname);         
-                  if (this===document.activeElement) {
-                      // Suppress autoexpand on next focus if this blur was actually the entire window losing focus
-                      // rather than this element losing focus to another element on the same window
-                      $t.data('silentfocus', true);
-                  }      
-                  $t.data('fillonarrow', false); // Prevent the slide-up from resetting value        
-                  slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we're sure we've left the control
-              }.bind(this)
-              ,200
-          ); 
-          
-          //Is this necessary here? Seems to cause issues when on Chrome (cannot select list items correctly.
-          //The usefulness of fillOnBlur is debated, see https://github.com/ivkremer/jquery-simple-combobox/issues/25
-          //Either remove it entirely, or move it into the setTimeout function above.
-          /*  
-          if (O.fillOnBlur && !O.invalidAsValue) {
-              getFirstP($t.parent().children(cp + clist)).click();
-              return;
-          }
-          */
-                    
-          var vOriginal = $t.val().trim();
-          var $valueInput = $t.siblings(cp + cvalue);
-          var previousV = $valueInput.val();
-          if (!vOriginal) { // if combo was emptied then set its value to '':
-              $valueInput.val('');
-          } else {
-              var value;
-              $t.siblings('select').find('option').each(function () {
-                  if (O.filterIgnoreCase) {
-                      if (vOriginal.toLowerCase() == $(this).text().trim().toLowerCase()) {
-                          value = this.value;
-                      }
-                  } else {
-                      if (vOriginal == $(this).text().trim()) {
-                          value = this.value;
-                      }
-                  }
-              });
-              if (!value) { // value not found (invalid)
-                  $valueInput.val(O.invalidAsValue ? vOriginal : '');
-              } else {
-                  $valueInput.val(value);
-              }
-          }
-          if (previousV !== $valueInput.val()) {
-              $valueInput.change();
-          }
+            // Need to do some stuff only when user moves off the scombobox.
+
+            // Try to do nothing in this handler if losing focus to another part of this
+            // combobox (e.g. the down/up button, or the list itself).
+            // IE needs this technique in addition to the timer one (see below) because
+            // clicking on the dropped-down div's scroller (if present) gives a blur
+            // but no suitable subsequent event with which to cancel the timer.
+            var $t = $(this);
+            var rt = $(e.relatedTarget).closest(cp);
+            if (rt.length > 0 && rt[0] === $t.closest(cp)[0]) {
+                return;
+            }
+
+            // The relatedTarget technique doesn't work on Chrome or on Firefox.
+            // So we start a 200ms timer when display element loses focus. In click
+            // handlers of control's other elements clearTimeout cancels the timer.
+            // If the timer isn't cancelled it will fire and do the necessary slide up.
+            // We can't defer all the blur processing with this timer as doing so would
+            // mean that a click event on a submit button could get an outdated value
+            // from the scombobox, because the click would precede the timer event.
+            //
+            // Note that the timer's function's bind() method is used to supply it with the correct 'this'
+            blurTimer = setTimeout(
+                function() {
+                    var $t = $(this),
+                        O = $T.data(pname);
+                    if (this === document.activeElement) {
+                        // Suppress autoexpand on next focus if this blur was actually the entire window losing focus
+                        // rather than this element losing focus to another element on the same window
+                        $t.data('silentfocus', true);
+                    }
+                    $t.data('fillonarrow', false); // Prevent the slide-up from resetting value
+                    slide.call($t.closest(cp).children(cp + clist), 'up'); // Make sure the list closes when we're sure we've left the control
+                }.bind(this), 200
+            );
+
+            //Is this necessary here? Seems to cause issues when on Chrome (cannot select list items correctly.
+            //The usefulness of fillOnBlur is debated, see https://github.com/ivkremer/jquery-simple-combobox/issues/25
+            //Either remove it entirely, or move it into the setTimeout function above.
+            /*
+            if (O.fillOnBlur && !O.invalidAsValue) {
+                getFirstP($t.parent().children(cp + clist)).click();
+                return;
+            }
+            */
+
+            var vOriginal = $t.val().trim();
+            var $valueInput = $t.siblings(cp + cvalue);
+            var previousV = $valueInput.val();
+            if (!vOriginal) { // if combo was emptied then set its value to '':
+                $valueInput.val('');
+            } else {
+                var value;
+                $t.siblings('select').find('option').each(function() {
+                    if (O.filterIgnoreCase) {
+                        if (vOriginal.toLowerCase() == $(this).text().trim().toLowerCase()) {
+                            value = this.value;
+                        }
+                    } else {
+                        if (vOriginal == $(this).text().trim()) {
+                            value = this.value;
+                        }
+                    }
+                });
+                if (!value) { // value not found (invalid)
+                    $valueInput.val(O.invalidAsValue ? vOriginal : '');
+                } else {
+                    $valueInput.val(value);
+                }
+            }
+            if (previousV !== $valueInput.val()) {
+                $valueInput.change().data('changed', true);
+            }
         });
         this.on('focus', cp + cdisplay, function() {
-        
+
             // Check for indicator that focus shouldn't cause expansion
             if ($(this).data('silentfocus')) {
                 $(this).data('silentfocus', false);
@@ -846,11 +873,11 @@
             }
             if (!this.value.trim()) { // focusing in empty field
                 // should trigger full dropdown:
-                if (($T.data(pname).expandOnFocus)||($(this).data('expandfocus'))) {
+                if (($T.data(pname).expandOnFocus) || ($(this).data('expandfocus'))) {
                     $(this).keyup();
                 }
             } else { // input.display is not empty
-                if (($T.data(pname).expandOnFocusWithValue)||($(this).data('expandfocus'))) {
+                if (($T.data(pname).expandOnFocusWithValue) || ($(this).data('expandfocus'))) {
                     if ($T[pname]('val')) { // if value is valid
                         var $listDiv = $T.children(cp + clist);
                         $listDiv.children().show();
@@ -879,7 +906,8 @@
         });
         this.on('click', cp + cddarr, function(e) {
             clearTimeout(blurTimer);
-            var $t = $(this), $combo = $t.closest(cp);
+            var $t = $(this),
+                $combo = $t.closest(cp);
             var $div = $combo.children(cp + clist);
             if ($div.is(':visible')) {
                 slide.call($div, 'up');
@@ -892,7 +920,8 @@
             clearTimeout(blurTimer);
             e.stopPropagation();
             var $t = $(this);
-            var $item = $t.parent(), $div = $T.children(cp + clist);
+            var $item = $t.parent(),
+                $div = $T.children(cp + clist);
             $div.children('p').eq($t.data('index')).find(':checkbox').prop('checked', false);
             $item.fadeOut(O.animation.duration);
             $t.closest(cp).children('select').trigger('change', [true]);
@@ -900,7 +929,8 @@
         // scroll listener is for ajax loading
         if (O.autoLoad != $.noop) {
             $(cp + clist, this).scroll(function() {
-                var $t = $(this), $select = $T.children('select');
+                var $t = $(this),
+                    $select = $T.children('select');
                 var currentScrollTop = $t.scrollTop();
                 var overhead = 50;
                 if (currentScrollTop > $t.data('scrollTop')) { // scrolling down
@@ -923,7 +953,7 @@
         }
 
 
-        $(document).bind('click.' + pname, {thisIs: this}, function(e) {
+        $(document).bind('click.' + pname, { thisIs: this }, function(e) {
             slide.call($(e.data.thisIs).children(cp + clist), 'up');
         });
 
@@ -976,7 +1006,8 @@
     }
 
     function sortF(a, b) {
-        var aT = a.text.trim().toLowerCase(), bT = b.text.trim().toLowerCase();
+        var aT = a.text.trim().toLowerCase(),
+            bT = b.text.trim().toLowerCase();
         return aT > bT ? 1 : aT == bT ? 0 : -1;
     }
 
@@ -1007,11 +1038,13 @@
      * `this` refers to combobox
      */
     function checkForInvalid() {
-        var $display = this.children(cp + cdisplay), $select = this.children('select'), O = this.data(pname);
+        var $display = this.children(cp + cdisplay),
+            $select = this.children('select'),
+            O = this.data(pname);
         var value, v = $display.val().trim();
         v = (O.filterIgnoreCase) ? v.toLowerCase() : v;
         // check if such value exists in options
-        $select.find('option').each(function () {
+        $select.find('option').each(function() {
             var candidate = $(this).text().trim();
             candidate = (O.filterIgnoreCase) ? candidate.toLowerCase() : candidate;
             if (candidate == v) {
@@ -1028,7 +1061,7 @@
                 // TODO refactor to make a more readable code:
                 if (O.highlightInvalid || (O.invalidAsValue ? (O.highlightInvalid) : O.highlightInvalid === null)) {
                     $display.addClass(pname + cinvalid).siblings(cp + cddback)
-                            .addClass(pname + cddback + cinvalid);
+                        .addClass(pname + cddback + cinvalid);
                 }
             }
             if (!O.invalidAsValue) { // TODO check if this code affects anything
@@ -1056,7 +1089,8 @@
             console.warn('no such easing: ' + options.easing);
             options.easing = 'swing';
         }
-        var $combobox = this.parent(), O = $combobox.data(pname);
+        var $combobox = this.parent(),
+            O = $combobox.data(pname);
         if (dir == 'up') {
             O.beforeClose.call($combobox);
             options.complete = function() {
@@ -1069,14 +1103,14 @@
             $combobox.children(cp + cddarr).removeClass(pname + cddarr + '-up');
         } else {
             O.beforeOpen.call($combobox);
-            options.complete = function() {O.afterOpen.call($combobox)};
+            options.complete = function() { O.afterOpen.call($combobox) };
             this.slideDown(options);
             $combobox.children(cp + cddarr).addClass(pname + cddarr + '-up');
-            
+
             // Every edit keystroke will call a slide down; use this opportunity to reset the list's display characteristics fully.
             $combobox.find(cp + chovered).removeClass(pname + chovered); // remove previous selection
             $(cp + '-marker', $combobox).contents().unwrap(); // remove previous highlight            
-            
+
             // Reveal everything whenever we slide down, so that user gets to see all the options.
             // If the slide down was triggered by entry of a character, filtering will immediately reduce the list
             // to matching items. If the slide down was by clicking the down-button, or entry of cursor-down,
@@ -1089,7 +1123,7 @@
             if ($t.data('fillonarrow') && !backspace) { // fix backspace bug
                 $t.data('fillonarrow', false).val($t.data('value'));
             }
-            
+
             // Highlight first full match when dropping down
             if (dir == 'down') {
                 var search = this.value.trim();
@@ -1104,7 +1138,7 @@
                     }
                     if (text == search) {
                         $combobox.children(cp + clist).children('p:eq(' + $selopts.index(this) + '):not(' + cp + csep + ', ' + cp + cpheader + ')').first().addClass(pname + chovered);
-			return false;
+                        return false;
                     }
                 });
             }
@@ -1112,8 +1146,12 @@
     }
 
     function checkboxesModePClick(e, forRefresh) { // this refers to paragraph dom element
-        var $t = $(this), $combo = $t.closest(cp), $div = $t.parent(), $ps = $div.children('p'),
-            index = $ps.index(this), duration = durations($div.parent().data(pname).animation.duration);
+        var $t = $(this),
+            $combo = $t.closest(cp),
+            $div = $t.parent(),
+            $ps = $div.children('p'),
+            index = $ps.index(this),
+            duration = durations($div.parent().data(pname).animation.duration);
         if (!forRefresh) {
             var $chbox = $t.find(':checkbox');
             // don't toggle prop('checked') if checkbox itself was clicked.
@@ -1124,7 +1162,8 @@
             if (e.shiftKey) { // mark between last click and current
                 if ($div.data('p-clicked-index') >= 0) { // not for the first time
                     var f = $div.data('p-clicked-index');
-                    var from = f < index ? f : index, to = f < index ? index : f;
+                    var from = f < index ? f : index,
+                        to = f < index ? index : f;
                     for (var i = from; i <= to; i++) {
                         $($ps[i]).find(':checkbox').prop('checked', choice);
                     }
@@ -1140,9 +1179,9 @@
                 if ($t.find(':checkbox').prop('checked')) {
                     $dispDivHolder.append(
                         $('<div />').addClass(pname + cditem)
-                            .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
-                            .append($('<div />').addClass(pname + cdiremove).text('×').data('index', i)).fadeIn(duration * 1.5)
-                            .attr('title', $t.attr('title'))
+                        .append($('<div />').addClass(pname + cditem + '-text').text($t.find(cp + cmainspan).text()))
+                        .append($('<div />').addClass(pname + cdiremove).text('×').data('index', i)).fadeIn(duration * 1.5)
+                        .attr('title', $t.attr('title'))
                     );
                 }
             });
@@ -1158,7 +1197,8 @@
      */
     function renderItems(items, prepend) {
         var settings = this.data(pname);
-        var $select = this.find('select'), $div = this.find(cp + clist);
+        var $select = this.find('select'),
+            $div = this.find(cp + clist);
         for (var i = 0; i < items.length; i++) {
             if (items[i].hasOwnProperty('separator')) { // if separator given then
                 if (items[i].hasOwnProperty('header')) { // if header text also given then add only header
@@ -1199,7 +1239,8 @@
         }
         var keys = Object.keys(o);
         for (var k = 0; k < keys.length; k++) {
-            var key = keys[k].replace(/-([a-z])/g, function(g) { return g[1].toUpperCase() });
+            var key = keys[k].replace(/-([a-z])/g, function(g) {
+                return g[1].toUpperCase() });
             if (keys[k] != key) { // hyphened property
                 o[key] = o[keys[k]];
                 delete o[keys[k]];
