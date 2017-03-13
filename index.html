@@ -123,7 +123,8 @@
     <select id="combo-02"></select>
     <script>
         $().scombobox.extendDefaults({
-            filterIgnoreAccents: true
+            filterIgnoreAccents: true,
+            highlight: true
         });
         $(function() {
             $('#combo-01').scombobox({filterDelay: 300, placeholder: 'Lol'});
