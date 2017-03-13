@@ -1280,9 +1280,8 @@
         }
         return this.each(function() {
             var $t = $(this);
-            if (!($t.is('select, div'))) {
-                console.warn('target element is incorrect: ', this);
-                return;
+            if ($t.parent().hasClass(pname)) {
+                return; // already initialized
             }
             if ($t.is('select')) {
                 $t.wrap('<div />');
