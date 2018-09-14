@@ -223,6 +223,8 @@
                     $select.empty();
                     $div.empty();
                     this.children(cp + cvalue + ', ' + cp + cdisplay).val('');
+                    $(opts.altField).val('');
+                    $(opts.altInvalidField).val('');
                 } // TODO consider if appendMode == 2 is not a stupid piece of code
                 renderItems.call(this, data, appendMode == 2); // if appendMode == 2, then it is prepend
             }
@@ -509,12 +511,16 @@
                         .addClass(pname + cddback + cinvalid);
                 }
             }
+            $(O.altField).val('');
+            $(O.altInvalidField).val(value);
             $valueInput.val(value);
             $display.val(value);
             return;
         }
         $t.find(cp + clist + ' p').eq($selected[0].index).addClass(pname + chovered).siblings().removeClass(pname + chovered);
 
+        $(O.altField).val(value);
+        $(O.altInvalidField).val('');
         $valueInput.val(value).data('changed', true);
         $select.val(value).change();
     }
@@ -785,6 +791,8 @@
             var $select = $div.closest(cp).children('select');
             $select.children('option').eq(index).prop('selected', true);
             $select.siblings(cp + cvalue).val($select.val());
+            $(O.altField).val($select.val());
+            $(O.altInvalidField).val('');
             $select.change();
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
@@ -841,6 +849,8 @@
             var previousV = $valueInput.val();
             if (!vOriginal) { // if combo was emptied then set its value to '':
                 $valueInput.val('');
+                $(O.altField).val('');
+                $(O.altInvalidField).val('');
             } else {
                 var value;
                 $t.siblings('select').find('option').each(function() {
@@ -856,8 +866,11 @@
                 });
                 if (!value) { // value not found (invalid)
                     $valueInput.val(O.invalidAsValue ? vOriginal : '');
+                    $(O.altField).val('');
+                    $(O.altInvalidField).val(vOriginal);
                 } else {
                     $valueInput.val(value);
+                    $(O.altField).val(value);
                 }
             }
             if (previousV !== $valueInput.val()) {
@@ -1066,6 +1079,8 @@
             }
             if (!O.invalidAsValue) { // TODO check if this code affects anything
                 $display.siblings('select, ' + cp + cvalue).val('');
+                $(O.altField).val('');
+                $(O.altInvalidField).val('');
             }
         } else {
             $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
@@ -1491,7 +1506,13 @@
         /**
          * Placeholder for search input.
          */
-        placeholder: ''
+        placeholder: '',
+
+        /**
+         * Selector, jQuery or element of alternative value containers
+         */
+        altField: '',
+        altInvalidField: ''
     };
 
     /**
