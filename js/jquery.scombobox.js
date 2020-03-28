@@ -178,6 +178,7 @@
                 if ($options.length == 0) {
                     // TODO restore, using $p.data(pname).key if provided instead
                 } else { // here are options:
+                    $div.empty();
                     $options.each(function() {
                         var $t = $(this);
                         var $p = $('<p />');
@@ -223,6 +224,8 @@
                     $select.empty();
                     $div.empty();
                     this.children(cp + cvalue + ', ' + cp + cdisplay).val('');
+                    $(opts.altField).val('');
+                    $(opts.altInvalidField).val('');
                 } // TODO consider if appendMode == 2 is not a stupid piece of code
                 renderItems.call(this, data, appendMode == 2); // if appendMode == 2, then it is prepend
             }
@@ -509,12 +512,19 @@
                         .addClass(pname + cddback + cinvalid);
                 }
             }
+            $(O.altField).val('');
+            $(O.altInvalidField).val(value);
             $valueInput.val(value);
+            $valueInput.attr('name', function() {
+                    return $select.attr('name') || '';
+            });
             $display.val(value);
             return;
         }
         $t.find(cp + clist + ' p').eq($selected[0].index).addClass(pname + chovered).siblings().removeClass(pname + chovered);
 
+        $(O.altField).val(value);
+        $(O.altInvalidField).val('');
         $valueInput.val(value).data('changed', true);
         $select.val(value).change();
     }
@@ -785,6 +795,8 @@
             var $select = $div.closest(cp).children('select');
             $select.children('option').eq(index).prop('selected', true);
             $select.siblings(cp + cvalue).val($select.val());
+            $(O.altField).val($select.val());
+            $(O.altInvalidField).val('');
             $select.change();
             slide.call($t.parent(), 'up');
             $t.addClass(pname + chovered).siblings().removeClass(pname + chovered);
@@ -841,6 +853,8 @@
             var previousV = $valueInput.val();
             if (!vOriginal) { // if combo was emptied then set its value to '':
                 $valueInput.val('');
+                $(O.altField).val('');
+                $(O.altInvalidField).val('');
             } else {
                 var value;
                 $t.siblings('select').find('option').each(function() {
@@ -856,8 +870,11 @@
                 });
                 if (!value) { // value not found (invalid)
                     $valueInput.val(O.invalidAsValue ? vOriginal : '');
+                    $(O.altField).val('');
+                    $(O.altInvalidField).val(vOriginal);
                 } else {
                     $valueInput.val(value);
+                    $(O.altField).val(value);
                 }
             }
             if (previousV !== $valueInput.val()) {
@@ -1066,6 +1083,8 @@
             }
             if (!O.invalidAsValue) { // TODO check if this code affects anything
                 $display.siblings('select, ' + cp + cvalue).val('');
+                $(O.altField).val('');
+                $(O.altInvalidField).val('');
             }
         } else {
             $display.removeClass(pname + cinvalid).siblings(cp + cddback).removeClass(pname + cddback + cinvalid);
@@ -1258,11 +1277,15 @@
      * @returns {Object|void} jQuery object on success. Throws error on undefined method.
      */
     $.fn[pname] = function(actOrOpts) {
+        var $that = this;
         if (typeof actOrOpts == 'string') {
             if (!this.length) { // method called on empty collection
                 $.error('Calling ' + pname + '.' + actOrOpts + '() method on empty collection');
             }
-            if (this.data(pname + '-init') == null) { // it can be legally false, but not undefined
+            if ($that.is('select')) {
+                $that = $that.closest('.scombobox');
+            }
+            if ($that.data(pname + '-init') == null) { // it can be legally false, but not undefined
                 $.error('Calling ' + pname + '.' + actOrOpts + '() method prior to initialization');
             }
             var method = methods[actOrOpts];
@@ -1276,7 +1299,7 @@
             return this;
         }
         if (method) {
-            return method.apply(this, Array.prototype.slice.call(arguments, 1));
+            return method.apply($that, Array.prototype.slice.call(arguments, 1));
         }
         return this.each(function() {
             var $t = $(this);
@@ -1491,7 +1514,13 @@
         /**
          * Placeholder for search input.
          */
-        placeholder: ''
+        placeholder: '',
+
+        /**
+         * Selector, jQuery or element of alternative value containers
+         */
+        altField: '',
+        altInvalidField: ''
     };
 
     /**
